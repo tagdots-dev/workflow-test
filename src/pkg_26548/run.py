@@ -33,8 +33,8 @@ def get_auth():
     try:
         gh_token = os.environ['GH_TOKEN']
         gh = Github(auth=Auth.Token(gh_token), per_page=100)
-        user = gh.get_user()
-        print(f"✅ Login successfully as: {user.login}")
+        # user = gh.get_user()
+        # print(f"✅ Login successfully as: {user.login}")
         return gh
 
     except KeyError:
