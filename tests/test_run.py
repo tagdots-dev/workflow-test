@@ -375,8 +375,8 @@ class TestMain:
             ]
         )
         print(f'\nMain result: {result}')
-        # print(result.stdout)
-        # print(result.stderr)
+        print(result.stdout)
+        print(result.stderr)
         assert result.exit_code == 2
 
     # def test_cli_main_min_runs_return_success(self):
@@ -414,6 +414,8 @@ class TestMain:
             ]
         )
         print(f'\nMain result: {result}')
+        print(result.stdout)
+        print(result.stderr)
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
 
@@ -452,6 +454,8 @@ class TestMain:
             ]
         )
         print(f'\nMain result: {result}')
+        print(result.stdout)
+        print(result.stderr)
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
 
