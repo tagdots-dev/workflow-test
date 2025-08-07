@@ -15,7 +15,6 @@ import click
 import pandas as pd
 from github import (
     Auth,
-    BadCredentialsException,
     Github,
     GithubException,
     Repository,
@@ -41,8 +40,6 @@ def get_auth():
         print("❌ Error: Environment variable (GH_TOKEN) not found.")
     except AssertionError:
         print("❌ Error: Environment variable (GH_TOKEN) is invalid")
-    except BadCredentialsException:
-        print("❌ Exception Error: Bad credentials")
 
     sys.exit(1)
 
