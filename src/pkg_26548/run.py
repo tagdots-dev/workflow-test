@@ -15,7 +15,6 @@ import click
 import pandas as pd
 from github import (
     Auth,
-    BadCredentialsException,
     Github,
     GithubException,
     Repository,
@@ -41,8 +40,8 @@ def get_auth():
         print("❌ Error: Environment variable (GH_TOKEN) not found.")
     except AssertionError:
         print("❌ Error: Environment variable (GH_TOKEN) is invalid")
-    except BadCredentialsException:
-        print("❌ Exception Error: Bad credentials")
+    # except BadCredentialsException:
+    #     print("❌ Exception Error: Bad credentials")
 
     sys.exit(1)
 
@@ -107,14 +106,14 @@ def get_core_api_rate_limit(gh):
 
     Return: core api limit
     """
-    try:
-        rate_limit = gh.get_rate_limit()
-        core_limit = rate_limit.core
-        return core_limit
+    # try:
+    rate_limit = gh.get_rate_limit()
+    core_limit = rate_limit.core
+    return core_limit
 
-    except Exception as e:
-        print(f'❌ {e}')
-        return None
+    # except Exception as e:
+    #     print(f'❌ {e}')
+    #     return None
 
 
 def get_all_workflow_runs(repo):
@@ -549,17 +548,17 @@ def main(dry_run, repo_url, min_runs, max_days):
                 console.print('[blue]****************************************************************************[/blue]')
 
     except Exception as e:
-        # print(f'❌ Exception Error: {e}')
+        print(f'❌ Exception Error: {e}')
 
-        if f"{e.status}":
-            if f"{e.status}" == "401":
-                print('❌ Exception Error: GitHub authentication error')
-            elif f"{e.status}" == "403":
-                print('❌ Exception Error: GitHub permission error')
-            elif f"{e.status}" == "404":
-                print('❌ Exception Error: GitHub repository not found')
-        else:  # pragma: no cover
-            print(f'❌ Exception Error: {e}')
+        # if f"{e.status}":
+        #     if f"{e.status}" == "401":
+        #         print('❌ Exception Error: GitHub authentication error')
+        #     elif f"{e.status}" == "403":
+        #         print('❌ Exception Error: GitHub permission error')
+        #     elif f"{e.status}" == "404":
+        #         print('❌ Exception Error: GitHub repository not found')
+        # else:  # pragma: no cover
+        #     print(f'❌ Exception Error: {e}')
 
         sys.exit(1)
 
