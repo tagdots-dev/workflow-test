@@ -8,15 +8,15 @@
 <br>
 
 ## 😎 Why use delete-workflow-runs?
-**delete-workflow-runs** was created because some of the _most popular_ actions for the same cause on the marketplace:
+**delete-workflow-runs** was created because some of the _most popular delete workflow runs_ actions on the marketplace:
 - are not regularly maintained.
+- do not identify orphan workflow runs to delete.
 - do not provide supportive information before a delete operation.
-- do not identify orphan workflow runs to delete (parent workflow was deleted).
 
 <br>
 
 ## ⭐ Why switch to delete-workflow-runs?
-- we reduce your supply chain risks with `openssf best practices` in our development and operations.
+- we reduce your supply chain risks with `openssf best practices` in our SDLC and operations.
 - we produce API rate limit consumption estimate in dry-run, so you can plan your delete task properly.
 - we identify orphan workflows to delete orphan workflow action runs.
 
@@ -64,9 +64,9 @@ Options:
 
 ### 🔍 Example 2 - Perform a dry-run to keep 10 workflow runs for each workflow
 **Summary**
-- **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run
-- **Workflow runs:** all workflow runs grouped by workflow name and divided between orphan and active workflows
-- **Mock Delete:** all workflow runs to be deleted
+- **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run.
+- **Workflow runs:** workflow runs grouped by workflow name & divided between orphan and active workflows.
+- **Mock Delete:** workflow runs to be deleted by workflow name.
 
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --min-runs 10 --dry-run true --repo-url https://github.com/tagdots/hello-world
@@ -141,9 +141,9 @@ Enough API limit to run this delete now? ✅ yes
 
 ### 🔍 Example 3 - Delete workflow runs and keep up to the last 10 days for each workflow
 **Summary**
-- **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run
-- **Workflow runs:** all workflow runs grouped by workflow name and divided between orphan and active workflows
-- **Mock Delete:** all workflow runs to be deleted
+- **API rate limit:** total, remaining, consumption after delete.
+- **Workflow runs:** workflow runs grouped by workflow name & divided between orphan and active workflows.
+- **Delete:** display workflow runs deleted by workflow name.
 
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --max-days 10 --dry-run false --repo-url https://github.com/tagdots/hello-world
@@ -235,10 +235,10 @@ API rate limit Reset At : 2025-08-07 22:46:47+00:00 (UTC)
 
 ## ⚠️ Summary of GitHub rate limit for standard repository
 ```
-* 1,000 requests per hour per repository
-* No more than 100 concurrent requests are allowed
-* No more than 900 points per minute are allowed for REST API endpoints
-* No more than 90 seconds of CPU time per 60 seconds of real time is allowed
+* 1,000 requests per hour per repository.
+* No more than 100 concurrent requests are allowed.
+* No more than 900 points per minute are allowed for REST API endpoints.
+* No more than 90 seconds of CPU time per 60 seconds of real time is allowed.
 * Make too many requests that consume excessive compute resources in a short period of time.
 ```
 

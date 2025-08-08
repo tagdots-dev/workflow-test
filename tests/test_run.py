@@ -11,7 +11,7 @@ from unittest.mock import Mock, patch
 import pandas as pd
 import pytest
 from click.testing import CliRunner
-from github import GithubException
+from github import BadCredentialsException, GithubException
 
 from pkg_26548.run import (
     break_down_df_all_runs,
@@ -50,20 +50,14 @@ class TestGetAuth:
             get_auth()
         assert excinfo.value.code == 1
 
-    # def test_get_auth_invalid_credentials(self, monkeypatch):
-    #     monkeypatch.setenv("GH_TOKEN", "invalid_token")
-    #     with pytest.raises(SystemExit) as excinfo:
-    #         get_auth()
-    #     assert excinfo.value.code == 1
-
-    # def test_get_auth_invalid_credentials(self, monkeypatch):
-    #     monkeypatch.setenv("GH_TOKEN", "invalid_token")
-    #     with patch("pkg_26548.run.Github") as mock_github:
-    #         mock_gh = mock_github.return_value
-    #         mock_gh.get_user.side_effect = BadCredentialsException(401, "Bad credentials")
-    #         with pytest.raises(SystemExit) as excinfo:
-    #             get_auth()
-    #         assert excinfo.value.code == 1
+    def test_get_auth_invalid_credentials(self, monkeypatch):
+        monkeypatch.setenv("GH_TOKEN", "invalid_token")
+        with patch("pkg_26548.run.Github") as mock_github:
+            mock_gh = mock_github.return_value
+            mock_gh.get_user.side_effect = BadCredentialsException(401, "Bad credentials")
+            with pytest.raises(SystemExit) as excinfo:
+                get_auth()
+            assert excinfo.value.code == 1
 
 
 class TestGetOwnerRepo:
@@ -151,8 +145,8 @@ class TestBreakDownDfAllRuns:
         mock_repo = Mock()
         mock_repo.get_workflows.return_value = [mock_workflow1, mock_workflow2]
         df_orphan_runs, df_active_runs, list_orphan_ids = break_down_df_all_runs(mock_repo, df_all_runs)
-        assert len(df_orphan_runs) == 1  # workflow_id=3   orphan
-        assert len(df_active_runs) == 2  # workflow_id=1,2 active
+        assert len(df_orphan_runs) == 1
+        assert len(df_active_runs) == 2
         assert list_orphan_ids == [201]
 
 
@@ -255,7 +249,7 @@ class TestDeleteActiveWorkflowRunsMaxDays:
         from pkg_26548.run import delete_active_workflow_runs_max_days
 
         df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],  # 4 条运行
+            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
             "run_id": [30001, 30002, 30003, 30004],
             "workflow_id": [101] * 4,
             "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4
@@ -379,25 +373,6 @@ class TestMain:
         print(result.stderr)
         assert result.exit_code == 2
 
-    # def test_cli_main_min_runs_return_success(self):
-    #     """
-    #     Test main (comment out to NOT delete)
-
-    #     Expect Result: keep only 100 workflow runs for each workflow
-    #     """
-    #     runner = CliRunner()
-    #     result = runner.invoke(
-    #         main,
-    #         [
-    #             "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-    #             "--min-runs", 100,
-    #             "--dry-run", "false"
-    #         ]
-    #     )
-    #     print(f'\nMain result: {result}')
-    #     assert result.exit_code == 0
-    #     assert "dry-run: False" in result.output
-
     def test_cli_main_min_runs_dry_run(self):
         """
         Test main
@@ -418,25 +393,6 @@ class TestMain:
         print(result.stderr)
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
-
-    # def test_cli_main_max_days_return_success(self):
-    #     """
-    #     Test main (comment out to NOT delete)
-
-    #     Expect Result: keep workflows in the last 5 days
-    #     """
-    #     runner = CliRunner()
-    #     result = runner.invoke(
-    #         main,
-    #         [
-    #             "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-    #             "--max-days", 5,
-    #             "--dry-run", "false"
-    #         ]
-    #     )
-    #     print(f'\nMain result: {result}')
-    #     assert result.exit_code == 0
-    #     assert "dry-run: False" in result.output
 
     def test_cli_main_max_days_dry_run(self):
         """

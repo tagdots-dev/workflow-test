@@ -15,6 +15,7 @@ import click
 import pandas as pd
 from github import (
     Auth,
+    BadCredentialsException,
     Github,
     GithubException,
     Repository,
@@ -32,14 +33,16 @@ def get_auth():
     try:
         gh_token = os.environ['GH_TOKEN']
         gh = Github(auth=Auth.Token(gh_token), per_page=100)
-        # user = gh.get_user()
-        # print(f"✅ Login successfully as: {user.login}")
+        user = gh.get_user()
+        print(f"✅ Login successfully as: {user.login}")
         return gh
 
     except KeyError:
         print("❌ Error: Environment variable (GH_TOKEN) not found.")
     except AssertionError:
         print("❌ Error: Environment variable (GH_TOKEN) is invalid")
+    except BadCredentialsException:
+        print("❌ Exception Error: Bad credentials")
 
     sys.exit(1)
 
@@ -546,6 +549,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                 console.print('[blue]****************************************************************************[/blue]')
 
     except Exception as e:
+        # print(f'❌ Exception Error: {e}')
+
         if f"{e.status}":
             if f"{e.status}" == "401":
                 print('❌ Exception Error: GitHub authentication error')
@@ -555,6 +560,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                 print('❌ Exception Error: GitHub repository not found')
         else:  # pragma: no cover
             print(f'❌ Exception Error: {e}')
+
+        sys.exit(1)
 
 
 if __name__ == '__main__':  # pragma: no cover
