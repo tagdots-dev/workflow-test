@@ -226,10 +226,10 @@ API rate limit Reset At : 2025-08-07 22:46:47+00:00 (UTC)
 
 | Input | Description | Default | Required | Notes |
 |-------|-------------|----------|----------|----------|
-| `repo-url` | Repository URL | `''` | Yes | e.g. https://github.com/{owner}/{repo} |
-| `dry-run` | Dry-Run | `true` | No | - |
-| `min-runs` | Min. no. of runs to <br>keep in a workflow | `''` | No | enter either min. runs or max. days |
-| `max-days` | Max. no. of days to <br>keep run in a workflow | `''` | No | enter either min. runs or max. days |
+| `repo-url` | Repository URL | `None` | Yes | e.g. https://github.com/{owner}/{repo} |
+| `dry-run` | Dry-Run | `True` | No | - |
+| `min-runs` | Min. no. of runs to <br>keep in a workflow | `None` | No | enter either min. runs or max. days |
+| `max-days` | Max. no. of days to <br>keep run in a workflow | `None` | No | enter either min. runs or max. days |
 
 <br>
 
