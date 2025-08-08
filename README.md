@@ -7,7 +7,7 @@
 
 <br>
 
-### 😎 Why use delete-workflow-runs?
+## 😎 Why use delete-workflow-runs?
 **delete-workflow-runs** was created because some of the _most popular_ actions for the same cause on the marketplace:
 - are not regularly maintained.
 - do not provide supportive information before a delete operation.
@@ -29,7 +29,7 @@ Please visit our GitHub action ([delete-workflow-runs-action](https://github.com
 
 ## 🖥 Running _delete-workflow-runs_ locally
 
-#### Prerequisites
+### Prerequisites
 ```
 * Python (3.12+)
 * GitHub fine-grained token (actions: write, contents: read)
@@ -37,15 +37,16 @@ Please visit our GitHub action ([delete-workflow-runs-action](https://github.com
 
 <br>
 
-#### Install _delete-workflow-runs_**
+### Install _delete-workflow-runs_
 ```
 ~/work/hello-world $ workon hello-world
 (hello-world) ~/work/hello-world $ export GH_TOKEN=github_pat_xxxxxxxxxxxxx
 (hello-world) ~/work/hello-world $ pip install -U delete-workflow-runs
 ```
+
 <br>
 
-#### 🔍 Example 1 - Run for help
+### 🔍 Example 1 - Run for help
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --help
 Usage: delete-workflow-runs [OPTIONS]
@@ -61,7 +62,7 @@ Options:
 
 <br>
 
-#### 🔍 Example 2 - Perform a dry-run to keep 10 workflow runs for each workflow
+### 🔍 Example 2 - Perform a dry-run to keep 10 workflow runs for each workflow
 **Summary**
 - **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run
 - **Workflow runs:** all workflow runs grouped by workflow name and divided between orphan and active workflows
@@ -138,7 +139,7 @@ Enough API limit to run this delete now? ✅ yes
 
 <br>
 
-#### 🔍 Example 3 - Delete workflow runs and keep up to the last 10 days for each workflow
+### 🔍 Example 3 - Delete workflow runs and keep up to the last 10 days for each workflow
 **Summary**
 - **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run
 - **Workflow runs:** all workflow runs grouped by workflow name and divided between orphan and active workflows
@@ -147,7 +148,76 @@ Enough API limit to run this delete now? ✅ yes
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --max-days 10 --dry-run false --repo-url https://github.com/tagdots/hello-world
 
+🚀 Starting to Delete GitHub Action workflows (dry-run: False, min-runs: None, max-days: 10)
 
+✅ Login successfully as: tagdots-owner
+
+💥 Core API Rate Limit Info
+API rate limit          : 5000
+API rate limit remaining: 4983
+
+
+💪 Gathering All Workflow Runs...
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+Number of orphan workflow IDs : 0
+Number of workflow runs       : 32
+Number of orphan workflow runs: 0
+Number of active workflow runs: 32
+
+
+🔍 Orphan Workflow Runs
+Number of oustanding orphan workflow run(s): 0
+
+🔍 Active Workflow Runs
+Number of oustanding active workflow run(s): 32
+
+
+🐑 Active Workflow Runs (grouped by Workflow Name)
+name
+ci                     9
+dependabot-updates     8
+reusable-build-test    4
+reusable-codeql        5
+reusable-pre-commit    5
+sidecar-pr-target      1
+dtype: int64
+
+
+🗑️ Deleting 1 workflow runs from ci
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579872850 deleted
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+
+🗑️ Deleting 2 workflow runs from dependabot-updates
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579973735 deleted
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579973116 deleted
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+
+🗑️ Deleting 2 workflow runs from reusable-build-test
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579881494 deleted
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579883068 deleted
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+
+🗑️ Deleting 3 workflow runs from reusable-codeql
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579884454 deleted
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579886956 deleted
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579885594 deleted
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+
+🗑️ Deleting 2 workflow runs from reusable-pre-commit
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579877146 deleted
+workflow run https://github.com/tagdots-dev/workflow-test/actions/runs/16579878141 deleted
+Processing data... ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:00
+
+
+💥 Core API Rate Limit Changes
+API rate limit used     : 24
+API rate limit remaining: 4959
+API rate limit Reset At : 2025-08-07 22:46:47+00:00 (UTC)
 ```
 
 <br>
@@ -158,8 +228,8 @@ Enough API limit to run this delete now? ✅ yes
 |-------|-------------|----------|----------|----------|
 | `repo-url` | Repository URL | `''` | Yes | e.g. https://github.com/{owner}/{repo} |
 | `dry-run` | Dry-Run | `true` | No | - |
-| `min-runs` | Min. no. of runs to keep in a workflow | `''` | No | - |
-| `max-days` | Max. no. of days to keep run in a workflow | `''` | NO | - |
+| `min-runs` | Min. no. of runs to keep in a workflow | `''` | No | enter either minimum runs or maximus days |
+| `max-days` | Max. no. of days to keep run in a workflow | `''` | No | enter either minimum runs or maximus days |
 
 <br>
 
@@ -171,15 +241,13 @@ Enough API limit to run this delete now? ✅ yes
 * No more than 90 seconds of CPU time per 60 seconds of real time is allowed
 * Make too many requests that consume excessive compute resources in a short period of time.
 ```
-<br>
-
 
 <br>
-
 
 ## 😕  Troubleshooting
 
 Open an [issue][issues]
+
 <br>
 
 ## 🙏  Contributing
@@ -187,10 +255,12 @@ Open an [issue][issues]
 For pull requests to be accepted on this project, you should follow [PEP8][pep8] when creating/updating Python codes.
 
 See [Contributing][contributing]
+
 <br>
 
 ## 🙌 Appreciation
 If you find this project helpful, please ⭐ star it.  **Thank you**.
+
 <br>
 
 ## 📚 References
@@ -198,6 +268,7 @@ If you find this project helpful, please ⭐ star it.  **Thank you**.
 [GitHub API rate limit](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28#primary-rate-limit-for-github_token-in-github-actions)
 
 [How to fork a repo](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
+
 <br>
 
 [contributing]: https://github.com/tagdots/delete-workflow-runs/blob/main/CONTRIBUTING.md
