@@ -103,7 +103,7 @@ def get_core_api_rate_limit(gh):
     Return: core api limit
     """
     rate_limit = gh.get_rate_limit()
-    core_limit = rate_limit.core
+    core_limit = rate_limit.rate
     return core_limit
 
 
