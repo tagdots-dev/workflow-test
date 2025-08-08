@@ -100,11 +100,11 @@ class TestGetCoreApiRateLimit:
         mock_gh = Mock()
         mock_core = Mock()
         mock_core.limit = 5000
-        mock_core.remaining = 4000
+        mock_core.resources.core.remaining = 4000
         mock_gh.get_rate_limit.return_value = Mock(core=mock_core)
         core_limit = get_core_api_rate_limit(mock_gh)
         assert core_limit.limit == 5000
-        assert core_limit.remaining == 4000
+        assert core_limit.resources.core.remaining == 4000
 
 
 class TestGetApiEstimate:
