@@ -470,7 +470,7 @@ def main(dry_run, repo_url, min_runs, max_days):
         core_limit_start = core_limit.used
         print('\n💥 Core API Rate Limit Info')
         print(f'API rate limit          : {core_limit.limit}')
-        print(f'API rate limit remaining: {core_limit.remaining}\n\n')
+        print(f'API rate limit remaining: {core_limit.resources.core.remaining}\n\n')
 
         """setup github repo object"""
         owner_repo = get_owner_repo(repo_url)
@@ -523,7 +523,7 @@ def main(dry_run, repo_url, min_runs, max_days):
             core_limit = get_core_api_rate_limit(gh)
             print('\n💥 Core API Rate Limit Changes')
             print(f'API rate limit used     : {int(core_limit.used) - int(core_limit_start)}')
-            print(f'API rate limit remaining: {int(core_limit.remaining)}')
+            print(f'API rate limit remaining: {core_limit.resources.core.remaining}')
             print(f'API rate limit Reset At : {core_limit.reset} (UTC)\n')
 
             if dry_run:
@@ -531,7 +531,7 @@ def main(dry_run, repo_url, min_runs, max_days):
 
                 console.print('\n[blue]************************** API Usage Estimate ******************************[/blue]')
                 console.print(f"This delete can consume [red]{estimate}[/red] of your API limit.  ")
-                if (core_limit.remaining * 0.90) > estimate:
+                if (core_limit.resources.core.remaining * 0.90) > estimate:
                     print('\nEnough API limit to run this delete now? ✅ yes')
                 else:
                     print('\nEnough API limit to run this delete now? ❌ no')
