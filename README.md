@@ -66,14 +66,12 @@ Options:
 **Summary**
 - **API rate limit:** total, remaining, consumption after this dry-run, & consumption estimate without dry-run.
 - **Workflow runs:** workflow runs grouped by workflow name & divided between orphan and active workflows.
-- **Mock Delete:** workflow runs to be deleted by workflow name.
+- **Mock Delete:** workflow runs to be deleted (grouped by workflow name).
 
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --min-runs 10 --dry-run true --repo-url https://github.com/tagdots/hello-world
 
 🚀 Starting to Delete GitHub Action workflows (dry-run: True, min-runs: 10, max-days: None)
-
-✅ Login successfully as: tagdots-owner
 
 💥 Core API Rate Limit Info
 API rate limit          : 5000
@@ -143,14 +141,12 @@ Enough API limit to run this delete now? ✅ yes
 **Summary**
 - **API rate limit:** total, remaining, consumption after delete.
 - **Workflow runs:** workflow runs grouped by workflow name & divided between orphan and active workflows.
-- **Delete:** display workflow runs deleted by workflow name.
+- **Delete:** display workflow runs deleted (grouped by workflow name).
 
 ```
 (hello-world) ~/work/hello-world $ delete-workflow-runs --max-days 10 --dry-run false --repo-url https://github.com/tagdots/hello-world
 
 🚀 Starting to Delete GitHub Action workflows (dry-run: False, min-runs: None, max-days: 10)
-
-✅ Login successfully as: tagdots-owner
 
 💥 Core API Rate Limit Info
 API rate limit          : 5000
