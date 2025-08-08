@@ -19,9 +19,9 @@ on:  # yamllint disable-line rule:truthy
 env:
   PYTHON_VERSION: '3.12.x'
 
-permissions:
-  contents: read
-  pull-requests: read
+# permissions:
+#   contents: read
+#   pull-requests: read
 
 jobs:
 
@@ -91,9 +91,9 @@ jobs:
 
   test:
 
-    permissions:
-      contents: write
-      pull-requests: write
+    # permissions:
+    #   contents: write
+    #   pull-requests: write
 
     needs: build
 
