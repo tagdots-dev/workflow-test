@@ -32,8 +32,6 @@ def get_auth():
     try:
         gh_token = os.environ['GH_TOKEN']
         gh = Github(auth=Auth.Token(gh_token), per_page=100)
-        # user = gh.get_user()
-        # print(f"✅ Login successfully as: {user.login}")
         return gh
 
     except KeyError:
@@ -104,14 +102,9 @@ def get_core_api_rate_limit(gh):
 
     Return: core api limit
     """
-    try:
-        rate_limit = gh.get_rate_limit()
-        core_limit = rate_limit.core
-        return core_limit
-
-    except Exception as e:
-        print(f'❌ {e}')
-        return None
+    rate_limit = gh.get_rate_limit()
+    core_limit = rate_limit.core
+    return core_limit
 
 
 def get_all_workflow_runs(repo):
@@ -546,15 +539,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                 console.print('[blue]****************************************************************************[/blue]')
 
     except Exception as e:
-        if f"{e.status}":
-            if f"{e.status}" == "401":
-                print('❌ Exception Error: GitHub authentication error')
-            elif f"{e.status}" == "403":
-                print('❌ Exception Error: GitHub permission error')
-            elif f"{e.status}" == "404":
-                print('❌ Exception Error: GitHub repository not found')
-        else:  # pragma: no cover
-            print(f'❌ Exception Error: {e}')
+        print(f'❌ Exception Error: {e}')
+        sys.exit(1)
 
 
 if __name__ == '__main__':  # pragma: no cover
