@@ -20,9 +20,9 @@ env:
   PYTHON_VERSION: '3.12.x'
 
 permissions:
+  actions: read
   contents: read
   pull-requests: read
-  actions: read
 
 jobs:
 
