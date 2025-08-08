@@ -16,8 +16,8 @@
 <br>
 
 ## ⭐ Why switch to delete-workflow-runs?
-- we reduce your supply chain risks with `openssf best practices` in our software development and operations.
-- we produce an estimate of API rate limit consumption in dry-run, allowing you to plan your delete operation properly.
+- we reduce your supply chain risks with `openssf best practices` in our development and operations.
+- we produce API rate limit consumption estimate in dry-run, so you can plan your delete task properly.
 - we identify orphan workflows to delete orphan workflow action runs.
 
 <br>
