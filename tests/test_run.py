@@ -50,15 +50,6 @@ class TestGetAuth:
             get_auth()
         assert excinfo.value.code == 1
 
-    # def test_get_auth_invalid_credentials(self, monkeypatch):
-    #     monkeypatch.setenv("GH_TOKEN", "invalid_token")
-    #     with patch("pkg_26548.run.Github") as mock_github:
-    #         mock_gh = mock_github.return_value
-    #         mock_gh.get_user.side_effect = BadCredentialsException(401, "Bad credentials")
-    #         with pytest.raises(SystemExit) as excinfo:
-    #             get_auth()
-    #         assert excinfo.value.code == 1
-
 
 class TestGetOwnerRepo:
     def test_https_url(self):
@@ -114,12 +105,6 @@ class TestGetCoreApiRateLimit:
         core_limit = get_core_api_rate_limit(mock_gh)
         assert core_limit.limit == 5000
         assert core_limit.remaining == 4000
-
-    # def test_get_rate_limit_failure(self):
-    #     mock_gh = Mock()
-    #     mock_gh.get_rate_limit.side_effect = Exception("API Error")
-    #     core_limit = get_core_api_rate_limit(mock_gh)
-    #     assert core_limit is None
 
 
 class TestGetApiEstimate:
@@ -361,7 +346,6 @@ class TestMain:
             print(result.stdout)
             print(result.stderr)
             assert result.exit_code == 1
-            # assert "repository not found" in result.output
 
     def test_cli_main_input_false(self):
         """
@@ -399,8 +383,8 @@ class TestMain:
             ]
         )
         print(f'\nMain result: {result}')
-        # print(result.stdout)
-        # print(result.stderr)
+        print(result.stdout)
+        print(result.stderr)
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
 
@@ -420,8 +404,8 @@ class TestMain:
             ]
         )
         print(f'\nMain result: {result}')
-        # print(result.stdout)
-        # print(result.stderr)
+        print(result.stdout)
+        print(result.stderr)
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
 
