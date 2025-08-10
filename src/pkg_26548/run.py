@@ -516,7 +516,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                 elif (isinstance(max_days, int) and max_days >= 0):
                     delete_active_workflow_runs_count =\
                         delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df_active_runs)
-                delete_active_workflow_runs_count = delete_active_workflow_runs_count.item()
+                delete_active_workflow_runs_count if isinstance(delete_active_workflow_runs_count, int) else \
+                    delete_active_workflow_runs_count.item()
 
             """
             display core api rate limit info and create a usage estimate
