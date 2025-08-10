@@ -26,7 +26,7 @@ from pkg_26548.run import (
 class TestGetAuth:
     def test_get_auth_success(self, monkeypatch):
         monkeypatch.setenv("GH_TOKEN", "valid_token")
-        with patch("delete_workflow_runs.run.Github") as mock_github:
+        with patch("pkg_26548.run.Github") as mock_github:
             mock_user = Mock()
             mock_user.login = "test_user"
             mock_gh = mock_github.return_value
@@ -126,9 +126,9 @@ class TestDeleteOrphanWorkflowRuns:
     """
     dry-run: delete orphan run ids
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_orphan_runs_dry_run(self, mock_thread):
-        from delete_workflow_runs.run import delete_orphan_workflow_runs
+        from pkg_26548.run import delete_orphan_workflow_runs
 
         df_orphan = pd.DataFrame({"run_id": [101010, 101020]})
         mock_repo = Mock()
@@ -137,9 +137,9 @@ class TestDeleteOrphanWorkflowRuns:
         assert count == 2
         mock_thread.assert_not_called()
 
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_orphan_runs(self, mock_thread):
-        from delete_workflow_runs.run import delete_orphan_workflow_runs
+        from pkg_26548.run import delete_orphan_workflow_runs
 
         df_orphan = pd.DataFrame({"run_id": [101, 102]})
         mock_repo = Mock()
@@ -152,9 +152,9 @@ class TestDeleteActiveWorkflowRunsMinRuns:
     """
     dry-run: delete 4 of 5 run ids from active workflows (on min-runs)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_min_runs_dry_run(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_min_runs
+        from pkg_26548.run import delete_active_workflow_runs_min_runs
 
         df_active = pd.DataFrame({
             "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01", "workflow-01"],
@@ -172,9 +172,9 @@ class TestDeleteActiveWorkflowRunsMinRuns:
     """
     dry-run: there is no active workflow to delete (on min-runs)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_min_runs_dry_run_no_delete(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_min_runs
+        from pkg_26548.run import delete_active_workflow_runs_min_runs
 
         df_active = pd.DataFrame({
             "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
@@ -193,9 +193,9 @@ class TestDeleteActiveWorkflowRunsMinRuns:
     """
     delete 2 of 5 run ids (on min-runs)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_min_runs(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_min_runs
+        from pkg_26548.run import delete_active_workflow_runs_min_runs
 
         df_active = pd.DataFrame({
             "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01", "workflow-01"],
@@ -216,9 +216,9 @@ class TestDeleteActiveWorkflowRunsMaxDays:
     """
     dry-run: delete 4 of 4 run ids from active workflows (on max-days)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_max_days_dry_run(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_max_days
+        from pkg_26548.run import delete_active_workflow_runs_max_days
 
         df_active = pd.DataFrame({
             "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
@@ -236,9 +236,9 @@ class TestDeleteActiveWorkflowRunsMaxDays:
     """
     dry-run: delete ZERO run ids (on max-days)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_max_days_dry_run_no_delete(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_max_days
+        from pkg_26548.run import delete_active_workflow_runs_max_days
 
         df_active = pd.DataFrame({
             "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
@@ -257,9 +257,9 @@ class TestDeleteActiveWorkflowRunsMaxDays:
     """
     delete 4 run ids from active workflows (on max-days)
     """
-    @patch("delete_workflow_runs.run.threading.Thread")
+    @patch("pkg_26548.run.threading.Thread")
     def test_delete_active_runs_max_days(self, mock_thread):
-        from delete_workflow_runs.run import delete_active_workflow_runs_max_days
+        from pkg_26548.run import delete_active_workflow_runs_max_days
 
         df_active = pd.DataFrame({
             "name": ["workflow-1", "workflow-1", "workflow-1", "workflow-1"],
@@ -280,7 +280,7 @@ class TestMain:
     def test_cli_main_401(self, monkeypatch):
         runner = CliRunner()
         monkeypatch.setenv("GH_TOKEN", "invalid_token")
-        with patch("delete_workflow_runs.run.get_auth") as mock_auth:
+        with patch("pkg_26548.run.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(401, "Authentication error")
@@ -299,7 +299,7 @@ class TestMain:
     def test_cli_main_403(self, monkeypatch):
         runner = CliRunner()
         monkeypatch.setenv("GH_TOKEN", "invalid_token")
-        with patch("delete_workflow_runs.run.get_auth") as mock_auth:
+        with patch("pkg_26548.run.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(403, "Permission error")
@@ -317,7 +317,7 @@ class TestMain:
 
     def test_cli_main_404(self):
         runner = CliRunner()
-        with patch("delete_workflow_runs.run.get_auth") as mock_auth:
+        with patch("pkg_26548.run.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(404, "Not found")
