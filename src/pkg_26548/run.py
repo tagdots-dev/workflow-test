@@ -531,19 +531,19 @@ def main(dry_run, repo_url, min_runs, max_days):
             print(f'API rate limit Reset At : {core_limit_reset} (UTC)\n')
 
             if dry_run:
-                estimate =\
+                core_limit_usage_estimate =\
                     get_api_estimate(delete_orphan_workflow_runs_count, delete_active_workflow_runs_count)
 
                 console.print('\n[blue]************************** API Usage Estimate ******************************[/blue]')
-                console.print(f'This delete can consume [red]{estimate}[/red] of your API limit.')
-                if (core_limit_remaining * 0.90) > estimate:
+                console.print(f'This delete can consume [red]{core_limit_usage_estimate}[/red] of your API limit.')
+                if (core_limit_remaining * 0.90) > core_limit_usage_estimate:
                     console.print('\nEnough API limit to run this delete now? ✅ yes')
                 else:
                     console.print('\nEnough API limit to run this delete now? ❌ no')
                     console.print('[red](segment this delete into multiple runs)[/red]')
                 console.print('[blue]****************************************************************************[/blue]')
             else:
-                estimate = None
+                core_limit_usage_estimate = None
 
         data_dict.update({
             "dry-run": dry_run,
@@ -552,7 +552,7 @@ def main(dry_run, repo_url, min_runs, max_days):
             "max-days": max_days,
             "core-limit-remaining": core_limit_remaining,
             "core-limit-reset": str(core_limit_reset),
-            "core-limit-usage-estimate": estimate,
+            "core-limit-usage-estimate": core_limit_usage_estimate,
             "delete-active-workflow-runs-count": delete_active_workflow_runs_count,
             "delete-orphan-workflow-runs-count": delete_orphan_workflow_runs_count,
         })
