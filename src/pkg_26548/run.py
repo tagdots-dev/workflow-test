@@ -462,6 +462,7 @@ def main(dry_run, repo_url, min_runs, max_days):
                   f"min-runs: [red]{min_runs}[/red], max-days: [red]{max_days}[/red])\n")
     data_dict = {}
 
+    core_limit_usage_estimate = None
     try:
         gh = get_auth()
 
@@ -530,7 +531,6 @@ def main(dry_run, repo_url, min_runs, max_days):
             print(f'API rate limit remaining: {core_limit_remaining}')
             print(f'API rate limit Reset At : {core_limit_reset} (UTC)\n')
 
-            core_limit_usage_estimate = None
             if dry_run:
                 core_limit_usage_estimate =\
                     get_api_estimate(delete_orphan_workflow_runs_count, delete_active_workflow_runs_count)
