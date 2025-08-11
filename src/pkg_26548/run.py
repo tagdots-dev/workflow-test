@@ -543,6 +543,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                     console.print('\nEnough API limit to run this delete now? ❌ no')
                     console.print('[red](segment this delete into multiple runs)[/red]')
                 console.print('[blue]****************************************************************************[/blue]')
+            else:
+                core_limit_usage_estimate = None
 
         data_dict.update({
             "dry-run": dry_run,
