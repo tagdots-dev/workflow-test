@@ -479,7 +479,6 @@ def main(dry_run, repo_url, min_runs, max_days):
         if check_user_inputs(repo, repo_url, min_runs, max_days):
             delete_orphan_workflow_runs_count = 0
             delete_active_workflow_runs_count = 0
-            core_limit_usage_estimate = None
 
             """
             get all workflow runs
