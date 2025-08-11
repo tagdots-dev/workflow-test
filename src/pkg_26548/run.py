@@ -460,9 +460,11 @@ def main(dry_run, repo_url, min_runs, max_days):
     console = Console()
     console.print(f"\n🚀 Starting to Delete GitHub Action workflows (dry-run: [red]{dry_run}[/red], "
                   f"min-runs: [red]{min_runs}[/red], max-days: [red]{max_days}[/red])\n")
-    data_dict = {}
 
+    """data to return"""
+    data_dict = {}
     core_limit_usage_estimate = None
+
     try:
         gh = get_auth()
 
