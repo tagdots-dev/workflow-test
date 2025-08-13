@@ -160,7 +160,7 @@ jobs:
 
   notify-slack:
     if: always()
-    needs: [badge-coverage, badge-marketplace, stale-workflows, stale-issues-prs, stale-branches, update-pre-commit]
+    needs: [badge-coverage, badge-marketplace, stale-issues-prs, stale-branches, update-pre-commit]
 
     runs-on: ubuntu-latest
 
@@ -173,7 +173,7 @@ jobs:
       shell: bash
       run: |
         # get overall result from all of the previous jobs
-        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflows.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
+        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
           echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
         else
           echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -193,7 +193,6 @@ jobs:
               URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\n
               Job: badge-coverage    - ${{ needs.badge-coverage.result }}\n
               Job: badge-marketplace - ${{ needs.badge-marketplace.result }}\n
-              Job: stale-workflows   - ${{ needs.stale-workflows.result }}\n
               Job: stale-issues-prs  - ${{ needs.stale-issues-prs.result }}\n
               Job: stale-branches    - ${{ needs.stale-branches.result }}\n
               Job: update-pre-commit - ${{ needs.update-pre-commit.result }}
