@@ -4,6 +4,7 @@
 Purpose: Delete GitHub Action Workflow Runs
 """
 
+import concurrent.futures
 import os
 import sys
 import threading
@@ -139,6 +140,25 @@ def get_all_workflow_runs(repo):
         for thread in threads:
             thread.join()
 
+        # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+        #     for runs in wf_runs:
+        #         futures = [executor.submit(
+        #             append_runs_to_list,
+        #             all_runs,
+        #             runs.workflow_id,
+        #             runs.id,
+        #             runs.created_at,
+        #             Path(runs.path).stem,
+        #             lock
+        #         )]
+        #         for future in concurrent.futures.as_completed(futures):
+        #             progress.update(overall_task, advance=1)
+        #             try:
+        #                 result = future.result()
+        #                 print(f"Task {result} Completed")
+        #             except Exception as e:
+        #                 print(f"Task Exception: {e}")
+
     df_all_runs = pd.DataFrame(all_runs)
     return df_all_runs
 
@@ -216,18 +236,24 @@ def delete_orphan_workflow_runs(repo, owner_repo, dry_run, df_orphan_runs):
     if dry_run:
         console.print(f"\n([red]MOCK TO DELETE[/red]): [black]{list_run_id}[/black]\n")
     else:
-        threads = []
+        # threads = []
         with Progress() as progress:
             overall_task = progress.add_task("[green]Processing data...\n", total=total_count)
 
-            for workflow_run_id in list_run_id:
-                thread = threading.Thread(target=delete_workflow_runs, args=(total_count, repo, workflow_run_id))
-                threads.append(thread)
-                thread.start()
-                progress.update(overall_task, advance=1)
+            # for workflow_run_id in list_run_id:
+            #     thread = threading.Thread(target=delete_workflow_runs, args=(total_count, repo, workflow_run_id))
+            #     threads.append(thread)
+            #     thread.start()
+            #     progress.update(overall_task, advance=1)
 
-            for thread in threads:
-                thread.join()
+            # for thread in threads:
+            #     thread.join()
+
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                for workflow_run_id in list_run_id:
+                    futures = [executor.submit(delete_workflow_runs, total_count, repo, workflow_run_id)]
+                    for future in concurrent.futures.as_completed(futures):
+                        progress.update(overall_task, advance=1)
 
     return len(list_run_id)
 
@@ -294,21 +320,27 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
                 console.print(f"([red]MOCK TO DELETE[/red]): "
                               f"[black]{result_df_after_min_runs['run_id'].to_list()}[/black]")
             else:
-                threads = []
+                # threads = []
                 with Progress() as progress:
                     overall_task = progress.add_task("[green]Processing data...\n", total=group_count)
 
-                    for index, row in result_df_after_min_runs.iterrows():
-                        thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
-                        threads.append(thread)
-                        thread.start()
-                        progress.update(overall_task, advance=1)
+                    # for index, row in result_df_after_min_runs.iterrows():
+                    #     thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
+                    #     threads.append(thread)
+                    #     thread.start()
+                    #     progress.update(overall_task, advance=1)
 
-                    for thread in threads:
-                        thread.join()
+                    # for thread in threads:
+                    #     thread.join()
+
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        for index, row in result_df_after_min_runs.iterrows():
+                            futures = [executor.submit(delete_workflow_runs, group_count, repo, row['run_id'])]
+                            for future in concurrent.futures.as_completed(futures):
+                                progress.update(overall_task, advance=1)
 
     else:
-        console.print(f'[red]With min-runs ({min_runs}), there is no active workflow run to delete[/red]')
+        console.print(f'[red]With min-runs ({min_runs}) for each workflow, there is no active workflow run to delete.[/red]')
     print('\n')
 
     return delete_active_workflow_runs_count
@@ -389,21 +421,27 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
             if dry_run:
                 console.print(f"([red]MOCK TO DELETE[/red]): [black]{result_df['run_id'].to_list()}[/black]")
             else:
-                threads = []
+                # threads = []
                 with Progress() as progress:
                     overall_task = progress.add_task("[green]Processing data...\n", total=group_count)
 
-                    for index, row in result_df.iterrows():
-                        thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
-                        threads.append(thread)
-                        thread.start()
-                        progress.update(overall_task, advance=1)
+                    # for index, row in result_df.iterrows():
+                    #     thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
+                    #     threads.append(thread)
+                    #     thread.start()
+                    #     progress.update(overall_task, advance=1)
 
-                    for thread in threads:
-                        thread.join()
+                    # for thread in threads:
+                    #     thread.join()
+
+                    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                        for index, row in result_df.iterrows():
+                            futures = [executor.submit(delete_workflow_runs, group_count, repo, row['run_id'])]
+                            for future in concurrent.futures.as_completed(futures):
+                                progress.update(overall_task, advance=1)
 
     else:
-        console.print(f'[red]With max-days ({max_days}), there is no active workflow run to delete[/red]')
+        console.print(f'[red]With max-days ({max_days}) for each workflow, there is no active workflow run to delete.[/red]')
     print('\n')
 
     return delete_active_workflow_runs_count
@@ -417,14 +455,13 @@ def delete_workflow_runs(count, repo, workflow_run_id):  # pragma: no cover
     count          : number of workflow runs for each workflow namw
     repo           : github repository object
     workflow_run_id: github action workflow run id
-
-    NOTE: when the count >= 100, the time delay is to stay under the secondary rate limit
     """
     try:
         workflow_run = repo.get_workflow_run(workflow_run_id)
         workflow_run.delete()
         print(f'workflow run {workflow_run.html_url} deleted')
-        time.sleep(5) if count >= 100 else ''
+        time.sleep(0.5)
+        return workflow_run_id
 
     except GithubException as e:
         print(f'❌ Failed to delete workflow run {workflow_run_id}: {e}')
@@ -490,11 +527,11 @@ def main(dry_run, repo_url, min_runs, max_days):
             if (len(df_all_runs) > 0):
                 df_orphan_runs, df_active_runs, list_orphan_ids = break_down_df_all_runs(repo, df_all_runs)
             else:
-                list_orphan_ids = []
+                # list_orphan_ids = []
                 df_active_runs = pd.DataFrame()
                 df_orphan_runs = pd.DataFrame()
-            print(f'Number of orphan workflow IDs : {len(list_orphan_ids)}')
-            print(f'Number of workflow runs       : {len(df_active_runs.index) + len(df_orphan_runs.index)}')
+            # print(f'Number of orphan workflow IDs : {len(list_orphan_ids)}')
+            print(f'Total Number of workflow runs : {len(df_active_runs.index) + len(df_orphan_runs.index)}')
             print(f'Number of orphan workflow runs: {len(df_orphan_runs.index)}')
             print(f'Number of active workflow runs: {len(df_active_runs.index)}\n')
 
@@ -518,8 +555,8 @@ def main(dry_run, repo_url, min_runs, max_days):
                 elif (isinstance(max_days, int) and max_days >= 0):
                     delete_active_workflow_runs_count =\
                         delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df_active_runs)
-                delete_active_workflow_runs_count if isinstance(delete_active_workflow_runs_count, int) else \
-                    delete_active_workflow_runs_count.item()
+                delete_active_workflow_runs_count = delete_active_workflow_runs_count.item()\
+                    if not isinstance(delete_active_workflow_runs_count, int) else delete_active_workflow_runs_count
 
             """
             display core api rate limit info and create a usage estimate
@@ -566,4 +603,4 @@ def main(dry_run, repo_url, min_runs, max_days):
 
 if __name__ == '__main__':  # pragma: no cover
     data_dict = main(standalone_mode=False)
-    print(data_dict)
+    # print(data_dict)
