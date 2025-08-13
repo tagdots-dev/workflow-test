@@ -83,22 +83,22 @@ jobs:
         label: Marketplace
         message: cleanup-workflow-action
 
-  # stale-workflows: # https://github.com/tagdots/delete-workflow-runs-action
-  #   runs-on: ubuntu-latest
+  stale-workflow-runs: # https://github.com/tagdots-dev/action-test
+    runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: read
-  #     actions: write
+    permissions:
+      contents: read
+      actions: write
 
-  #   steps:
-  #   - name: Run to remove stale-workflows
-  #     id: stale-workflows
-  #     uses: tagdots/delete-workflow-runs-action@main
-  #     env:
-  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     with:
-  #       repo-url: ${{ github.repository }}
-  #       max-days: 10
+    steps:
+    - name: Run stale-workflow-runs
+      id: stale-workflow-runs
+      uses: tagdots-dev/action-test@delete-workflow-run
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        repo-url: ${{ github.repository }}
+        max-days: 10
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
