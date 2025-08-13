@@ -336,7 +336,7 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         for index, row in result_df_after_min_runs.iterrows():
                             futures = [executor.submit(delete_workflow_runs, group_count, repo, row['run_id'])]
-                            for future in concurrent.futures.as_completed(futures):
+                            for _ in concurrent.futures.as_completed(futures):
                                 progress.update(overall_task, advance=1)
 
     else:
@@ -437,7 +437,7 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         for index, row in result_df.iterrows():
                             futures = [executor.submit(delete_workflow_runs, group_count, repo, row['run_id'])]
-                            for future in concurrent.futures.as_completed(futures):
+                            for _ in concurrent.futures.as_completed(futures):
                                 progress.update(overall_task, advance=1)
 
     else:
