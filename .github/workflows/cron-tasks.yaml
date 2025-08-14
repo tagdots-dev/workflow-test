@@ -104,7 +104,7 @@ jobs:
     - name: Use generated output
       run: |
         # get result_dict
-        echo "Data returned: ${{ steps.stale-workflow-runs.outputs.result_dict }}"
+        echo "Data returned: ${{ steps.stale-workflow-runs.outputs }}"
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
