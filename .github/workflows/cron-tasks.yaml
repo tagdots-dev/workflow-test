@@ -138,11 +138,11 @@ jobs:
       id: delete-workflow-runs
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO-URL: ${{ github.repository }}
-        MAX-DAYS: 10
-        DRY-RUN: 'true'
+        REPO_URL: ${{ github.repository }}
+        MAX_DAYS: 10
+        DRY_RUN: 'true'
       run: |
-        echo "RESULT_DICT=$(pkg-26548 --dry-run ${{ DRY-RUN }} --repo-url ${{ REPO-URL }} --max-days ${{ MAX-DAYS}})" >> "$GITHUB_OUTPUT"
+        echo "RESULT_DICT=$(pkg-26548 --dry-run ${{ DRY_RUN }} --repo-url ${{ REPO_URL }} --max-days ${{ MAX_DAYS }})" >> "$GITHUB_OUTPUT"
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
