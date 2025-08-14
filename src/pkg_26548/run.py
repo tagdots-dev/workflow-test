@@ -148,25 +148,6 @@ def get_all_workflow_runs(repo):
         for thread in threads:
             thread.join()
 
-        # with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-        #     for runs in wf_runs:
-        #         futures = [executor.submit(
-        #             append_runs_to_list,
-        #             all_runs,
-        #             runs.workflow_id,
-        #             runs.id,
-        #             runs.created_at,
-        #             Path(runs.path).stem,
-        #             lock
-        #         )]
-        #         for future in concurrent.futures.as_completed(futures):
-        #             progress.update(overall_task, advance=1)
-        #             try:
-        #                 result = future.result()
-        #                 print(f"Task {result} Completed")
-        #             except Exception as e:
-        #                 print(f"Task Exception: {e}")
-
     df_all_runs = pd.DataFrame(all_runs)
     return df_all_runs
 
@@ -244,23 +225,13 @@ def delete_orphan_workflow_runs(repo, owner_repo, dry_run, df_orphan_runs):
     if dry_run:
         console.print(f"\n([red]MOCK TO DELETE[/red]): [black]{list_run_id}[/black]\n")
     else:
-        # threads = []
         with Progress() as progress:
             overall_task = progress.add_task("[green]Processing data...\n", total=total_count)
-
-            # for workflow_run_id in list_run_id:
-            #     thread = threading.Thread(target=delete_workflow_runs, args=(total_count, repo, workflow_run_id))
-            #     threads.append(thread)
-            #     thread.start()
-            #     progress.update(overall_task, advance=1)
-
-            # for thread in threads:
-            #     thread.join()
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 for workflow_run_id in list_run_id:
                     futures = [executor.submit(delete_workflow_runs, total_count, repo, workflow_run_id)]
-                    for future in concurrent.futures.as_completed(futures):
+                    for _ in concurrent.futures.as_completed(futures):
                         progress.update(overall_task, advance=1)
 
     return len(list_run_id)
@@ -331,15 +302,6 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
                 # threads = []
                 with Progress() as progress:
                     overall_task = progress.add_task("[green]Processing data...\n", total=group_count)
-
-                    # for index, row in result_df_after_min_runs.iterrows():
-                    #     thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
-                    #     threads.append(thread)
-                    #     thread.start()
-                    #     progress.update(overall_task, advance=1)
-
-                    # for thread in threads:
-                    #     thread.join()
 
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         for index, row in result_df_after_min_runs.iterrows():
@@ -429,18 +391,8 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
             if dry_run:
                 console.print(f"([red]MOCK TO DELETE[/red]): [black]{result_df['run_id'].to_list()}[/black]")
             else:
-                # threads = []
                 with Progress() as progress:
                     overall_task = progress.add_task("[green]Processing data...\n", total=group_count)
-
-                    # for index, row in result_df.iterrows():
-                    #     thread = threading.Thread(target=delete_workflow_runs, args=(group_count, repo, row['run_id']))
-                    #     threads.append(thread)
-                    #     thread.start()
-                    #     progress.update(overall_task, advance=1)
-
-                    # for thread in threads:
-                    #     thread.join()
 
                     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                         for index, row in result_df.iterrows():
@@ -485,8 +437,8 @@ def get_api_estimate(orphan_runs_count, delete_runs_count):
 
     NOTE:
     1. this script consumes 3 API limit at the minimum
-    2. "delete workflow run" requires 2 API calls to 1) retrieve the workflow run object 2) call the delete method
-    3. every additional page (100 rows) on paginationlist adds an additional API call
+    2. every page (100 items) on paginationlist adds an API call
+    3. "delete workflow run" requires 2 API calls to 1) retrieve the workflow run object 2) call the delete method
     """
     estimate = (
         ((orphan_runs_count + delete_runs_count) * 2) +
@@ -497,6 +449,20 @@ def get_api_estimate(orphan_runs_count, delete_runs_count):
 
 def write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_reset,
                     core_usage_estimate, delete_active_workflow_runs_count, delete_orphan_workflow_runs_count):
+    """
+    Write data_dict to a file
+
+    Parameter(s):
+    dry_run                          : dry run
+    repo_url                         : repository url
+    max_days                         : maximum number of days to keep the run in a workflow
+    min_runs                         : minimum number of runs to keep in a workflow
+    core_remaining                   : core api rate limit remaining
+    core_reset                       : core api rate limit reset at
+    core_usage_estimate              : core api rate limit consumption for delete operation
+    delete_active_workflow_runs_count: number of active workflow runs to delete
+    delete_orphan_workflow_runs_count: number of orphan workflow runs to delete
+    """
     data_dict = {}
     data_dict.update({
         "dry-run": dry_run,
@@ -524,8 +490,7 @@ def main(dry_run, repo_url, min_runs, max_days):
     console.print(f"\n🚀 Starting to Delete GitHub Action workflows (dry-run: [red]{dry_run}[/red], "
                   f"min-runs: [red]{min_runs}[/red], max-days: [red]{max_days}[/red])\n")
 
-    """data to return"""
-    # data_dict = {}
+    """initialize data"""
     core_remaining = 0
     core_reset = None
     core_usage_estimate = None
@@ -534,13 +499,6 @@ def main(dry_run, repo_url, min_runs, max_days):
 
     try:
         gh = get_auth()
-
-        # """display initial core api rate limit info at the beginning"""
-        # core = get_core_api_rate_limit(gh)
-        # core_start = core.used
-        # print('\n💥 Core API Rate Limit (start)')
-        # print(f'API rate limit          : {core.limit}')
-        # print(f'API rate limit remaining: {core.remaining}\n\n')
 
         """setup github repo object"""
         owner_repo = get_owner_repo(repo_url)
@@ -554,10 +512,8 @@ def main(dry_run, repo_url, min_runs, max_days):
             if (len(df_all_runs) > 0):
                 df_orphan_runs, df_active_runs, list_orphan_ids = break_down_df_all_runs(repo, df_all_runs)
             else:
-                # list_orphan_ids = []
                 df_active_runs = pd.DataFrame()
                 df_orphan_runs = pd.DataFrame()
-            # print(f'Number of orphan workflow IDs : {len(list_orphan_ids)}')
             print(f'\nTotal Number of workflow runs : {len(df_active_runs.index) + len(df_orphan_runs.index)}')
             print(f'Number of orphan workflow runs: {len(df_orphan_runs.index)}')
             print(f'Number of active workflow runs: {len(df_active_runs.index)}\n')
@@ -601,6 +557,9 @@ def main(dry_run, repo_url, min_runs, max_days):
                     console.print('[red](segment this delete into multiple runs)[/red]')
                 console.print('[blue]****************************************************************************[/blue]')
 
+        """
+        write data_dict to a file for data feed to integrate with other tools
+        """
         write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_reset, core_usage_estimate,
                         delete_active_workflow_runs_count, delete_orphan_workflow_runs_count)
 
@@ -611,5 +570,3 @@ def main(dry_run, repo_url, min_runs, max_days):
 
 if __name__ == '__main__':  # pragma: no cover
     main()
-    # data_dict = main(standalone_mode=False)
-    # print(f"result_dict: {data_dict}")
