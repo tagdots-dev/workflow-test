@@ -92,6 +92,7 @@ jobs:
       actions: write
 
     steps:
+
     - name: Run stale-workflow-runs
       id: stale-workflow-runs
       uses: tagdots-dev/action-test@delete-workflow-runs
@@ -112,6 +113,12 @@ jobs:
           data = json.load(file)
 
         print(data)
+        print(data['repo-url'])
+        print(data['max-days'])
+        print(data['min-runs'])
+        print(data['core_usage_estimate'])
+        print(data['delete-active-workflow-runs-count'])
+        print(data['delete-orphan-workflow-runs-count'])
 
   # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
   #   runs-on: ubuntu-latest
