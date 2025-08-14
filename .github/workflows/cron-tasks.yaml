@@ -108,17 +108,7 @@ jobs:
         max-days: 10
         dry-run: true
 
-    # - name: Get data (python)
-    #   id: get_data
-    #   shell: python
-    #   run: |
-    #     import json
-    #     file_path = 'data_dict.log'
-    #     with open(file_path, 'r') as file:
-    #       data = json.load(file)
-    #     print(data)
-
-    - name: Get data (shell)
+    - name: Get data
       id: get_data
       shell: bash
       run: |
@@ -127,48 +117,15 @@ jobs:
         echo "min_runs=$(cat data_dict.log | jq '."min-runs"')" >> $GITHUB_OUTPUT
         echo "usage_est=$(cat data_dict.log | jq '."core-limit-usage-estimate"')" >> $GITHUB_OUTPUT
 
-  # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
-  #   runs-on: ubuntu-latest
+    - name: Validate data
+      id: validate_data
+      shell: bash
+      run: |
+        # get data from delete-workflow-runs action
+        echo "${{ steps.get_data.outputs.MAX_DAYS }}
+        echo "${{ steps.get_data.outputs.MIN_RUNS }}
+        echo "${{ steps.get_data.outputs.USAGE_EST }}
 
-  #   permissions:
-  #     contents: read
-  #     actions: write
-
-  #   # outputs:
-  #   #   RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
-
-  #   steps:
-  #   - id: checkout-source-code
-  #     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
-
-  #   - id: setup-Python
-  #     uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-  #     with:
-  #       python-version: ${{ env.PYTHON_VERSION }}
-
-  #   - name: install delete-workflow-runs
-  #     shell: bash
-  #     run: |
-  #       # install delete-workflow-runs
-  #       pip install -U pkg-26548
-
-  #   - name: get delete-workflow-runs version
-  #     shell: bash
-  #     run: |
-  #       # get delete-workflow-runs version
-  #       pkg-26548 --version
-
-  #   - name: Run delete-workflow-runs
-  #     shell: bash
-  #     id: delete-workflow-runs
-  #     env:
-  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       REPO_URL: "https://github.com/${{ github.repository }}"
-  #       MAX_DAYS: 10
-  #       DRY_RUN: 'true'
-  #     run: |
-  #       RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)
-  #       echo $RESULT_DICT
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
