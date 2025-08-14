@@ -505,12 +505,12 @@ def main(dry_run, repo_url, min_runs, max_days):
     try:
         gh = get_auth()
 
-        """display initial core api rate limit info at the beginning"""
-        core_limit = get_core_api_rate_limit(gh)
-        core_limit_start = core_limit.used
-        print('\n💥 Core API Rate Limit (start)')
-        print(f'API rate limit          : {core_limit.limit}')
-        print(f'API rate limit remaining: {core_limit.remaining}\n\n')
+        # """display initial core api rate limit info at the beginning"""
+        # core_limit = get_core_api_rate_limit(gh)
+        # core_limit_start = core_limit.used
+        # print('\n💥 Core API Rate Limit (start)')
+        # print(f'API rate limit          : {core_limit.limit}')
+        # print(f'API rate limit remaining: {core_limit.remaining}\n\n')
 
         """setup github repo object"""
         owner_repo = get_owner_repo(repo_url)
@@ -531,7 +531,7 @@ def main(dry_run, repo_url, min_runs, max_days):
                 df_active_runs = pd.DataFrame()
                 df_orphan_runs = pd.DataFrame()
             # print(f'Number of orphan workflow IDs : {len(list_orphan_ids)}')
-            print(f'Total Number of workflow runs : {len(df_active_runs.index) + len(df_orphan_runs.index)}')
+            print(f'\nTotal Number of workflow runs : {len(df_active_runs.index) + len(df_orphan_runs.index)}')
             print(f'Number of orphan workflow runs: {len(df_orphan_runs.index)}')
             print(f'Number of active workflow runs: {len(df_active_runs.index)}\n')
 
@@ -562,13 +562,13 @@ def main(dry_run, repo_url, min_runs, max_days):
             display core api rate limit info and create a usage estimate
             """
             core_limit = get_core_api_rate_limit(gh)
-            core_limit_used = int(core_limit.used) - int(core_limit_start)
+            # core_limit_used = int(core_limit.used) - int(core_limit_start)
             core_limit_reset = core_limit.reset
             core_limit_remaining = core_limit.remaining
-            print('\n💥 Core API Rate Limit (end)')
-            print(f'API rate limit used     : {core_limit_used}')
+            print('\n💥 Core API Rate Limit Info')
+            # print(f'API rate limit used     : {core_limit_used}')
             print(f'API rate limit remaining: {core_limit_remaining}')
-            print(f'API rate limit Reset At : {core_limit_reset} (UTC)\n')
+            print(f'API rate limit reset at : {core_limit_reset} (UTC)\n')
 
             if dry_run:
                 core_limit_usage_estimate =\
