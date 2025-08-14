@@ -116,7 +116,7 @@ jobs:
         print(data['repo-url'])
         print(data['max-days'])
         print(data['min-runs'])
-        print(data['core-usage-estimate'])
+        print(data['core-limit-usage-estimate'])
         print(data['delete-active-workflow-runs-count'])
         print(data['delete-orphan-workflow-runs-count'])
 
