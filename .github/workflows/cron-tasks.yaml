@@ -88,10 +88,22 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
       actions: write
+      contents: read
+
+    outputs:
+      DRY_RUN: ${{ steps.get_data.outputs.dry_run }}
+      REPO_URL: ${{ steps.get_data.outputs.repo_url }}
+      MAX_DAYS: ${{ steps.get_data.outputs.max_days }}
+      MIN_RUNS: ${{ steps.get_data.outputs.min_runs }}
+      LIMIT_EST: ${{ steps.get_data.outputs.limit_usage_est }}
+      LIMIT_REM: ${{ steps.get_data.outputs.limit_rem }}
+      LIMIT_RES: ${{ steps.get_data.outputs.limit_res }}
+      ACTIVE_CT: ${{ steps.get_data.outputs.active_ct }}
+      ORPHAN_CT: ${{ steps.get_data.outputs.orphan_ct }}
 
     steps:
+
     - name: Run stale-workflow-runs
       id: stale-workflow-runs
       uses: tagdots-dev/action-test@delete-workflow-runs
@@ -100,50 +112,37 @@ jobs:
       with:
         repo-url: ${{ github.repository }}
         max-days: 10
-        dry-run: true
+        dry-run: false
 
-  # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
-  #   runs-on: ubuntu-latest
+    - name: Get data and set GITHUB_OUTPUT
+      id: get_data
+      shell: bash
+      run: |
+        # get data from the last step to set GITHUB_OUTPUT
+        echo "dry_run=$(cat data_dict.log | jq '."dry-run"')" >> $GITHUB_OUTPUT
+        echo "repo_url=$(cat data_dict.log | jq '."repo-url"')" >> $GITHUB_OUTPUT
+        echo "max_days=$(cat data_dict.log | jq '."max-days"')" >> $GITHUB_OUTPUT
+        echo "min_runs=$(cat data_dict.log | jq '."min-runs"')" >> $GITHUB_OUTPUT
+        echo "limit_usage_est=$(cat data_dict.log | jq '."core-limit-usage-estimate"')" >> $GITHUB_OUTPUT
+        echo "limit_rem=$(cat data_dict.log | jq '."core-limit-remaining"')" >> $GITHUB_OUTPUT
+        echo "limit_res=$(cat data_dict.log | jq '."core-limit-reset"')" >> $GITHUB_OUTPUT
+        echo "active_ct=$(cat data_dict.log | jq '."delete-active-workflow-runs-count"')" >> $GITHUB_OUTPUT
+        echo "orphan_ct=$(cat data_dict.log | jq '."delete-orphan-workflow-runs-count"')" >> $GITHUB_OUTPUT
 
-  #   permissions:
-  #     contents: read
-  #     actions: write
-
-  #   # outputs:
-  #   #   RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
-
-  #   steps:
-  #   - id: checkout-source-code
-  #     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
-
-  #   - id: setup-Python
-  #     uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-  #     with:
-  #       python-version: ${{ env.PYTHON_VERSION }}
-
-  #   - name: install delete-workflow-runs
-  #     shell: bash
-  #     run: |
-  #       # install delete-workflow-runs
-  #       pip install -U pkg-26548
-
-  #   - name: get delete-workflow-runs version
-  #     shell: bash
-  #     run: |
-  #       # get delete-workflow-runs version
-  #       pkg-26548 --version
-
-  #   - name: Run delete-workflow-runs
-  #     shell: bash
-  #     id: delete-workflow-runs
-  #     env:
-  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #       REPO_URL: "https://github.com/${{ github.repository }}"
-  #       MAX_DAYS: 10
-  #       DRY_RUN: 'true'
-  #     run: |
-  #       RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)
-  #       echo $RESULT_DICT
+    # - name: Validate data
+    #   id: validate_data
+    #   shell: bash
+    #   run: |
+    #     # get data from delete-workflow-runs action
+    #     echo "dry-run                   : ${{ steps.get_data.outputs.DRY_RUN }}"
+    #     echo "repo-url                  : ${{ steps.get_data.outputs.REPO_URL }}"
+    #     echo "max-days                  : ${{ steps.get_data.outputs.MAX_DAYS }}"
+    #     echo "min-runs                  : ${{ steps.get_data.outputs.MIN_RUNS }}"
+    #     echo "limit-usage-estimate      : ${{ steps.get_data.outputs.LIMIT_EST }}"
+    #     echo "limit-remaining           : ${{ steps.get_data.outputs.LIMIT_REM }}"
+    #     echo "limit-reset-at            : ${{ steps.get_data.outputs.LIMIT_RES }}"
+    #     echo "active-workflow-runs-count: ${{ steps.get_data.outputs.ACTIVE_CT }}"
+    #     echo "orphan-workflow-runs-count: ${{ steps.get_data.outputs.ORPHAN_CT }}"
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
@@ -185,33 +184,32 @@ jobs:
         pr-check: true
         repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-  # update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
-  #   runs-on: ubuntu-latest
+  update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
+    runs-on: ubuntu-latest
 
-  #   permissions:
-  #     contents: write
-  #     pull-requests: write
+    permissions:
+      contents: write
+      pull-requests: write
 
-  #   steps:
-  #   - name: Run update-pre-commit
-  #     id: update-pre-commit
-  #     env:
-  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  #     uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
-  #     with:
-  #       file: .pre-commit-config.yaml
-  #       dry-run: false
-  #       open-pr: true
+    steps:
+    - name: Run update-pre-commit
+      id: update-pre-commit
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
+      with:
+        file: .pre-commit-config.yaml
+        dry-run: false
+        open-pr: true
 
   notify-slack:
     if: always()
-    # needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
-    needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches]
+    needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
 
     runs-on: ubuntu-latest
 
     outputs:
-      WORKFLOW_RESULT: ${{ steps.get-previous-jobs-results.outputs.WORKFLOW_RESULT }}
+      WORKFLOW_RESULT: ${{ steps.get-overall-jobs-results.outputs.WORKFLOW_RESULT }}
 
     steps:
     - name: Get Overall Jobs Results
@@ -219,8 +217,7 @@ jobs:
       shell: bash
       run: |
         # get overall result from all of the previous jobs
-        # if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
-        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' }}"; then
+        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
           echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
         else
           echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -242,6 +239,6 @@ jobs:
               Job: badge-marketplace   - ${{ needs.badge-marketplace.result }}\n
               Job: stale-workflow-runs - ${{ needs.stale-workflow-runs.result }}\n
               Job: stale-issues-prs    - ${{ needs.stale-issues-prs.result }}\n
-              Job: stale-branches      - ${{ needs.stale-branches.result }}
-              # Job: update-pre-commit   - ${{ needs.update-pre-commit.result }}
+              Job: stale-branches      - ${{ needs.stale-branches.result }}\n
+              Job: update-pre-commit   - ${{ needs.update-pre-commit.result }}
               ```"
