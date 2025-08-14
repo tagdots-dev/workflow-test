@@ -138,7 +138,7 @@ jobs:
       id: delete-workflow-runs
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO_URL: ${{ github.repository }}
+        REPO_URL: "https://github.com/${{ github.repository }}"
         MAX_DAYS: 10
         DRY_RUN: 'true'
       run: |
