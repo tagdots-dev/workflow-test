@@ -113,12 +113,12 @@ jobs:
           data = json.load(file)
 
         print(data)
-        print(data['repo-url'])
-        print(data['max-days'])
-        print(data['min-runs'])
-        print(data['core-limit-usage-estimate'])
-        print(data['delete-active-workflow-runs-count'])
-        print(data['delete-orphan-workflow-runs-count'])
+        print(f"repo-url                  : {data['repo-url']}")
+        print(f"max-days                  : {data['max-days']}")
+        print(f"min-runs                  : {data['min-runs']}")
+        print(f"usage-estimate            : {data['core-limit-usage-estimate']}")
+        print(f"active-workflow-runs-count: {data['delete-active-workflow-runs-count']}")
+        print(f"orphan-workflow-runs-count: {data['delete-orphan-workflow-runs-count']}")
 
   # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
   #   runs-on: ubuntu-latest
