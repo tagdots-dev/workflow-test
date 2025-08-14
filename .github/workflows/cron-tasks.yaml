@@ -103,7 +103,8 @@ jobs:
 
     - name: Use the generated value
       run: |
-        echo "The value is: ${{ steps.stale-workflow-runs.core-limit-usage-estimate }}"
+        echo "The value is: ${{ steps.stale-workflow-runs.data_dict.core-limit-usage-estimate }}"
+        echo "The value is: ${{ steps.stale-workflow-runs.data_dict['core-limit-usage-estimate'] }}"
 
 
   stale-issues-prs: # https://github.com/actions/stale
