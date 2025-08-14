@@ -142,7 +142,7 @@ jobs:
         MAX-DAYS: 10
         DRY-RUN: true
       run: |
-        echo "RESULT_DICT=$(pkg-26548 --dry-run $DRY-RUN --repo-url $REPO-URL --max-days $MAX-DAYS)" >> "$GITHUB_OUTPUT"
+        echo "RESULT_DICT=$(pkg-26548 --dry-run ${{ DRY-RUN }} --repo-url ${{ REPO-URL }} --max-days ${{ MAX-DAYS}})" >> "$GITHUB_OUTPUT"
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
