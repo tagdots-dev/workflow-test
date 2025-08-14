@@ -110,7 +110,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo-url: ${{ github.repository }}
+        repo-url: https://github.com/tagdots-dev/python-test
         max-days: 10
         dry-run: true
 
