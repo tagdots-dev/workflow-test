@@ -122,9 +122,9 @@ jobs:
       shell: bash
       run: |
         # get data from delete-workflow-runs action
-        echo "${{ steps.get_data.outputs.MAX_DAYS }}
-        echo "${{ steps.get_data.outputs.MIN_RUNS }}
-        echo "${{ steps.get_data.outputs.USAGE_EST }}
+        echo "${{ steps.get_data.outputs.MAX_DAYS }}"
+        echo "${{ steps.get_data.outputs.MIN_RUNS }}"
+        echo "${{ steps.get_data.outputs.USAGE_EST }}"
 
 
   stale-issues-prs: # https://github.com/actions/stale
