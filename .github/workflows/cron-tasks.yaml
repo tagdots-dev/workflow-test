@@ -101,11 +101,10 @@ jobs:
         repo-url: ${{ github.repository }}
         max-days: 10
 
-    - name: Use the generated value
+    - name: Use generated output
       run: |
-        echo "The value is: ${{ steps.stale-workflow-runs.data_dict.core-limit-usage-estimate }}"
-        echo "The value is: ${{ steps.stale-workflow-runs.data_dict['core-limit-usage-estimate'] }}"
-
+        # get result_dict
+        echo "Data returned: ${{ steps.stale-workflow-runs.outputs.result_dict }}"
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
