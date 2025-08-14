@@ -110,7 +110,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo-url: https://github.com/tagdots-dev/python-test
+        repo-url: tagdots-dev/python-test
         max-days: 10
         dry-run: true
 
@@ -134,15 +134,15 @@ jobs:
       shell: bash
       run: |
         # get data from delete-workflow-runs action
-        echo "${{ steps.get_data.outputs.DRY_RUN }}"
-        echo "${{ steps.get_data.outputs.REPO_URL }}"
-        echo "${{ steps.get_data.outputs.MAX_DAYS }}"
-        echo "${{ steps.get_data.outputs.MIN_RUNS }}"
-        echo "${{ steps.get_data.outputs.LIMIT_EST }}"
-        echo "${{ steps.get_data.outputs.LIMIT_REM }}"
-        echo "${{ steps.get_data.outputs.LIMIT_RES }}"
-        echo "${{ steps.get_data.outputs.ACTIVE_CT }}"
-        echo "${{ steps.get_data.outputs.ORPHAN_CT }}"
+        echo "dry-run                   : ${{ steps.get_data.outputs.DRY_RUN }}"
+        echo "repo-url                  : ${{ steps.get_data.outputs.REPO_URL }}"
+        echo "max-days                  : ${{ steps.get_data.outputs.MAX_DAYS }}"
+        echo "min-runs                  : ${{ steps.get_data.outputs.MIN_RUNS }}"
+        echo "limit-usage-estimate      : ${{ steps.get_data.outputs.LIMIT_EST }}"
+        echo "limit-remaining           : ${{ steps.get_data.outputs.LIMIT_REM }}"
+        echo "limit-reset-at            : ${{ steps.get_data.outputs.LIMIT_RES }}"
+        echo "active-workflow-runs-count: ${{ steps.get_data.outputs.ACTIVE_CT }}"
+        echo "orphan-workflow-runs-count: ${{ steps.get_data.outputs.ORPHAN_CT }}"
 
 
   stale-issues-prs: # https://github.com/actions/stale
