@@ -92,10 +92,13 @@ jobs:
       actions: write
 
     outputs:
+      DRY_RUN: ${{ steps.get_data.outputs.dry_run }}
+      REPO_URL: ${{ steps.get_data.outputs.repo_url }}
       MAX_DAYS: ${{ steps.get_data.outputs.max_days }}
       MIN_RUNS: ${{ steps.get_data.outputs.min_runs }}
-      USAGE_EST: ${{ steps.get_data.outputs.usage_est }}
+      LIMIT_EST: ${{ steps.get_data.outputs.usage_est }}
       LIMIT_REM: ${{ steps.get_data.outputs.limit_rem }}
+      LIMIT_RES: ${{ steps.get_data.outputs.limit_res }}
       ACTIVE_CT: ${{ steps.get_data.outputs.active_ct }}
       ORPHAN_CT: ${{ steps.get_data.outputs.orphan_ct }}
 
@@ -111,15 +114,18 @@ jobs:
         max-days: 10
         dry-run: true
 
-    - name: Get data
+    - name: Get data and set GITHUB_OUTPUT
       id: get_data
       shell: bash
       run: |
-        # get data from delete-workflow-runs action
+        # get data from the last step to set GITHUB_OUTPUT
+        echo "dry_run=$(cat data_dict.log | jq '."dry-run"')" >> $GITHUB_OUTPUT
+        echo "repo_url=$(cat data_dict.log | jq '."repo-url"')" >> $GITHUB_OUTPUT
         echo "max_days=$(cat data_dict.log | jq '."max-days"')" >> $GITHUB_OUTPUT
         echo "min_runs=$(cat data_dict.log | jq '."min-runs"')" >> $GITHUB_OUTPUT
-        echo "usage_est=$(cat data_dict.log | jq '."core-limit-usage-estimate"')" >> $GITHUB_OUTPUT
+        echo "limit_est=$(cat data_dict.log | jq '."core-limit-usage-estimate"')" >> $GITHUB_OUTPUT
         echo "limit_rem=$(cat data_dict.log | jq '."core-limit-remaining"')" >> $GITHUB_OUTPUT
+        echo "limit_res=$(cat data_dict.log | jq '."core-limit-reset"')" >> $GITHUB_OUTPUT
         echo "active_ct=$(cat data_dict.log | jq '."delete-active-workflow-runs-count"')" >> $GITHUB_OUTPUT
         echo "orphan_ct=$(cat data_dict.log | jq '."delete-orphan-workflow-runs-count"')" >> $GITHUB_OUTPUT
 
@@ -128,10 +134,13 @@ jobs:
       shell: bash
       run: |
         # get data from delete-workflow-runs action
+        echo "${{ steps.get_data.outputs.DRY_RUN }}"
+        echo "${{ steps.get_data.outputs.REPO_URL }}"
         echo "${{ steps.get_data.outputs.MAX_DAYS }}"
         echo "${{ steps.get_data.outputs.MIN_RUNS }}"
-        echo "${{ steps.get_data.outputs.USAGE_EST }}"
+        echo "${{ steps.get_data.outputs.LIMIT_EST }}"
         echo "${{ steps.get_data.outputs.LIMIT_REM }}"
+        echo "${{ steps.get_data.outputs.LIMIT_RES }}"
         echo "${{ steps.get_data.outputs.ACTIVE_CT }}"
         echo "${{ steps.get_data.outputs.ORPHAN_CT }}"
 
