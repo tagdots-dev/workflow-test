@@ -5,6 +5,7 @@ Purpose: Delete GitHub Action Workflow Runs
 """
 
 import concurrent.futures
+import json
 import os
 import sys
 import threading
@@ -101,11 +102,18 @@ def get_core_api_rate_limit(gh):
     Parameter(s):
     gh: github class object from get_auth()
 
-    Return: core api limit
+    Return: core api limit remaining and reset at
     """
     RateLimitOverview = gh.get_rate_limit()
-    core_limit = RateLimitOverview.resources.core
-    return core_limit
+    core = RateLimitOverview.resources.core
+    core_reset = core.reset
+    core_remaining = core.remaining
+
+    print('\n💥 Core API Rate Limit Info')
+    print(f'API rate limit remaining: {core_remaining}')
+    print(f'API rate limit reset at : {core_reset} (UTC)\n')
+
+    return core_remaining, core_reset
 
 
 def get_all_workflow_runs(repo):
@@ -487,6 +495,24 @@ def get_api_estimate(orphan_runs_count, delete_runs_count):
     return estimate
 
 
+def write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_reset,
+                    core_usage_estimate, delete_active_workflow_runs_count, delete_orphan_workflow_runs_count):
+    data_dict = {}
+    data_dict.update({
+        "dry-run": dry_run,
+        "repo-url": repo_url,
+        "min-runs": min_runs,
+        "max-days": max_days,
+        "core-limit-remaining": core_remaining,
+        "core-limit-reset": str(core_reset),
+        "core-limit-usage-estimate": core_usage_estimate,
+        "delete-active-workflow-runs-count": delete_active_workflow_runs_count,
+        "delete-orphan-workflow-runs-count": delete_orphan_workflow_runs_count,
+    })
+    with open("data_dict.log", "w") as f:
+        json.dump(data_dict, f, indent=2)
+
+
 @click.command()
 @click.option("--dry-run", required=False, type=bool, default=True, show_default=True)
 @click.option("--repo-url", required=True, type=str, help="e.g. https://github.com/{owner}/{repo}")
@@ -499,27 +525,28 @@ def main(dry_run, repo_url, min_runs, max_days):
                   f"min-runs: [red]{min_runs}[/red], max-days: [red]{max_days}[/red])\n")
 
     """data to return"""
-    data_dict = {}
-    core_limit_usage_estimate = None
+    # data_dict = {}
+    core_remaining = 0
+    core_reset = None
+    core_usage_estimate = None
+    delete_orphan_workflow_runs_count = 0
+    delete_active_workflow_runs_count = 0
 
     try:
         gh = get_auth()
 
         # """display initial core api rate limit info at the beginning"""
-        # core_limit = get_core_api_rate_limit(gh)
-        # core_limit_start = core_limit.used
+        # core = get_core_api_rate_limit(gh)
+        # core_start = core.used
         # print('\n💥 Core API Rate Limit (start)')
-        # print(f'API rate limit          : {core_limit.limit}')
-        # print(f'API rate limit remaining: {core_limit.remaining}\n\n')
+        # print(f'API rate limit          : {core.limit}')
+        # print(f'API rate limit remaining: {core.remaining}\n\n')
 
         """setup github repo object"""
         owner_repo = get_owner_repo(repo_url)
         repo = gh.get_repo(owner_repo)
 
         if check_user_inputs(repo, repo_url, min_runs, max_days):
-            delete_orphan_workflow_runs_count = 0
-            delete_active_workflow_runs_count = 0
-
             """
             get all workflow runs
             """
@@ -561,40 +588,21 @@ def main(dry_run, repo_url, min_runs, max_days):
             """
             display core api rate limit info and create a usage estimate
             """
-            core_limit = get_core_api_rate_limit(gh)
-            # core_limit_used = int(core_limit.used) - int(core_limit_start)
-            core_limit_reset = core_limit.reset
-            core_limit_remaining = core_limit.remaining
-            print('\n💥 Core API Rate Limit Info')
-            # print(f'API rate limit used     : {core_limit_used}')
-            print(f'API rate limit remaining: {core_limit_remaining}')
-            print(f'API rate limit reset at : {core_limit_reset} (UTC)\n')
-
+            core_remaining, core_reset = get_core_api_rate_limit(gh)
             if dry_run:
-                core_limit_usage_estimate =\
-                    get_api_estimate(delete_orphan_workflow_runs_count, delete_active_workflow_runs_count)
+                core_usage_estimate = get_api_estimate(delete_orphan_workflow_runs_count, delete_active_workflow_runs_count)
 
                 console.print('\n[blue]************************** API Usage Estimate ******************************[/blue]')
-                console.print(f'This delete can consume [red]{core_limit_usage_estimate}[/red] of your API limit.')
-                if (core_limit_remaining * 0.90) > core_limit_usage_estimate:
+                console.print(f'This delete can consume [red]{core_usage_estimate}[/red] of your API limit.')
+                if (core_remaining * 0.90) > core_usage_estimate:
                     console.print('\nEnough API limit to run this delete now? ✅ yes')
                 else:
                     console.print('\nEnough API limit to run this delete now? ❌ no')
                     console.print('[red](segment this delete into multiple runs)[/red]')
                 console.print('[blue]****************************************************************************[/blue]')
 
-        data_dict.update({
-            "dry-run": dry_run,
-            "repo-url": repo_url,
-            "min-runs": min_runs,
-            "max-days": max_days,
-            "core-limit-remaining": core_limit_remaining,
-            "core-limit-reset": str(core_limit_reset),
-            "core-limit-usage-estimate": core_limit_usage_estimate,
-            "delete-active-workflow-runs-count": delete_active_workflow_runs_count,
-            "delete-orphan-workflow-runs-count": delete_orphan_workflow_runs_count,
-        })
-        return data_dict
+        write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_reset, core_usage_estimate,
+                        delete_active_workflow_runs_count, delete_orphan_workflow_runs_count)
 
     except Exception as e:
         print(f'❌ Exception Error: {e}')
@@ -602,5 +610,6 @@ def main(dry_run, repo_url, min_runs, max_days):
 
 
 if __name__ == '__main__':  # pragma: no cover
-    data_dict = main(standalone_mode=False)
-    print(f"::set-output name=result_dict::{data_dict}")
+    main()
+    # data_dict = main(standalone_mode=False)
+    # print(f"result_dict: {data_dict}")
