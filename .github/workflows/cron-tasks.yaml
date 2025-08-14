@@ -140,7 +140,7 @@ jobs:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         REPO-URL: ${{ github.repository }}
         MAX-DAYS: 10
-        DRY-RUN: true
+        DRY-RUN: 'true'
       run: |
         echo "RESULT_DICT=$(pkg-26548 --dry-run ${{ DRY-RUN }} --repo-url ${{ REPO-URL }} --max-days ${{ MAX-DAYS}})" >> "$GITHUB_OUTPUT"
 
