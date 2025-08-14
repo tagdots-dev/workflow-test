@@ -110,7 +110,7 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        repo-url: tagdots-dev/python-test
+        repo-url: ${{ github.repository }}
         max-days: 10
         dry-run: true
 
@@ -129,20 +129,20 @@ jobs:
         echo "active_ct=$(cat data_dict.log | jq '."delete-active-workflow-runs-count"')" >> $GITHUB_OUTPUT
         echo "orphan_ct=$(cat data_dict.log | jq '."delete-orphan-workflow-runs-count"')" >> $GITHUB_OUTPUT
 
-    - name: Validate data
-      id: validate_data
-      shell: bash
-      run: |
-        # get data from delete-workflow-runs action
-        echo "dry-run                   : ${{ steps.get_data.outputs.DRY_RUN }}"
-        echo "repo-url                  : ${{ steps.get_data.outputs.REPO_URL }}"
-        echo "max-days                  : ${{ steps.get_data.outputs.MAX_DAYS }}"
-        echo "min-runs                  : ${{ steps.get_data.outputs.MIN_RUNS }}"
-        echo "limit-usage-estimate      : ${{ steps.get_data.outputs.LIMIT_EST }}"
-        echo "limit-remaining           : ${{ steps.get_data.outputs.LIMIT_REM }}"
-        echo "limit-reset-at            : ${{ steps.get_data.outputs.LIMIT_RES }}"
-        echo "active-workflow-runs-count: ${{ steps.get_data.outputs.ACTIVE_CT }}"
-        echo "orphan-workflow-runs-count: ${{ steps.get_data.outputs.ORPHAN_CT }}"
+    # - name: Validate data
+    #   id: validate_data
+    #   shell: bash
+    #   run: |
+    #     # get data from delete-workflow-runs action
+    #     echo "dry-run                   : ${{ steps.get_data.outputs.DRY_RUN }}"
+    #     echo "repo-url                  : ${{ steps.get_data.outputs.REPO_URL }}"
+    #     echo "max-days                  : ${{ steps.get_data.outputs.MAX_DAYS }}"
+    #     echo "min-runs                  : ${{ steps.get_data.outputs.MIN_RUNS }}"
+    #     echo "limit-usage-estimate      : ${{ steps.get_data.outputs.LIMIT_EST }}"
+    #     echo "limit-remaining           : ${{ steps.get_data.outputs.LIMIT_REM }}"
+    #     echo "limit-reset-at            : ${{ steps.get_data.outputs.LIMIT_RES }}"
+    #     echo "active-workflow-runs-count: ${{ steps.get_data.outputs.ACTIVE_CT }}"
+    #     echo "orphan-workflow-runs-count: ${{ steps.get_data.outputs.ORPHAN_CT }}"
 
 
   stale-issues-prs: # https://github.com/actions/stale
@@ -211,7 +211,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      WORKFLOW_RESULT: ${{ steps.get-previous-jobs-results.outputs.WORKFLOW_RESULT }}
+      WORKFLOW_RESULT: ${{ steps.get-overall-jobs-results.outputs.WORKFLOW_RESULT }}
 
     steps:
     - name: Get Overall Jobs Results
