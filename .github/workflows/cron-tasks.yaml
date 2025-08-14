@@ -146,23 +146,23 @@ jobs:
         pr-check: true
         repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-  update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
-    runs-on: ubuntu-latest
+  # update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
+  #   runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
+  #   permissions:
+  #     contents: write
+  #     pull-requests: write
 
-    steps:
-    - name: Run update-pre-commit
-      id: update-pre-commit
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
-      with:
-        file: .pre-commit-config.yaml
-        dry-run: false
-        open-pr: true
+  #   steps:
+  #   - name: Run update-pre-commit
+  #     id: update-pre-commit
+  #     env:
+  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
+  #     with:
+  #       file: .pre-commit-config.yaml
+  #       dry-run: false
+  #       open-pr: true
 
   notify-slack:
     if: always()
