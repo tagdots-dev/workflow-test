@@ -103,7 +103,7 @@ jobs:
         max-days: 10
         dry-run: true
 
-    - name: Get Data
+    - name: Get data (python)
       shell: python
       run: |
         import json
@@ -119,6 +119,11 @@ jobs:
         print(f"usage-estimate            : {data['core-limit-usage-estimate']}")
         print(f"active-workflow-runs-count: {data['delete-active-workflow-runs-count']}")
         print(f"orphan-workflow-runs-count: {data['delete-orphan-workflow-runs-count']}")
+
+    - name: Get data (shell)
+      shell: shell
+      run: |
+        echo "estimate=$(echo data_dict.log | jq .['core-limit-usage-estimate'])" >> $GITHUB_OUTPUT
 
   # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
   #   runs-on: ubuntu-latest
