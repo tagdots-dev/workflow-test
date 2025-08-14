@@ -102,6 +102,17 @@ jobs:
         max-days: 10
         dry-run: true
 
+    - name: Get Data
+      shell: python
+      run: |
+        import json
+
+        file_path = 'data_dict.log'
+        with open(file_path, 'r') as file:
+          data = json.load(file)
+
+        print(data)
+
   # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
   #   runs-on: ubuntu-latest
 
