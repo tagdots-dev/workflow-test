@@ -109,8 +109,8 @@ jobs:
       contents: read
       actions: write
 
-    outputs:
-      RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
+    # outputs:
+    #   RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
 
     steps:
     - id: checkout-source-code
@@ -142,7 +142,8 @@ jobs:
         MAX_DAYS: 10
         DRY_RUN: 'true'
       run: |
-        echo "RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)" >> $GITHUB_OUTPUT
+        RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)
+        echo $RESULT_DICT
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
