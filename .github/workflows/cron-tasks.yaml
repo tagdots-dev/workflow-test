@@ -102,48 +102,48 @@ jobs:
         max-days: 10
         dry-run: true
 
-  stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
-    runs-on: ubuntu-latest
+  # stale-workflow-runs-py: # https://github.com/tagdots-dev/action-test
+  #   runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      actions: write
+  #   permissions:
+  #     contents: read
+  #     actions: write
 
-    # outputs:
-    #   RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
+  #   # outputs:
+  #   #   RESULT_DICT: ${{ steps.delete-workflow-runs.RESULT_DICT }}
 
-    steps:
-    - id: checkout-source-code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
+  #   steps:
+  #   - id: checkout-source-code
+  #     uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # 4.2.2
 
-    - id: setup-Python
-      uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
+  #   - id: setup-Python
+  #     uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+  #     with:
+  #       python-version: ${{ env.PYTHON_VERSION }}
 
-    - name: install delete-workflow-runs
-      shell: bash
-      run: |
-        # install delete-workflow-runs
-        pip install -U pkg-26548
+  #   - name: install delete-workflow-runs
+  #     shell: bash
+  #     run: |
+  #       # install delete-workflow-runs
+  #       pip install -U pkg-26548
 
-    - name: get delete-workflow-runs version
-      shell: bash
-      run: |
-        # get delete-workflow-runs version
-        pkg-26548 --version
+  #   - name: get delete-workflow-runs version
+  #     shell: bash
+  #     run: |
+  #       # get delete-workflow-runs version
+  #       pkg-26548 --version
 
-    - name: Run delete-workflow-runs
-      shell: bash
-      id: delete-workflow-runs
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        REPO_URL: "https://github.com/${{ github.repository }}"
-        MAX_DAYS: 10
-        DRY_RUN: 'true'
-      run: |
-        RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)
-        echo $RESULT_DICT
+  #   - name: Run delete-workflow-runs
+  #     shell: bash
+  #     id: delete-workflow-runs
+  #     env:
+  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       REPO_URL: "https://github.com/${{ github.repository }}"
+  #       MAX_DAYS: 10
+  #       DRY_RUN: 'true'
+  #     run: |
+  #       RESULT_DICT=$(pkg-26548 --dry-run $DRY_RUN --repo-url $REPO_URL --max-days $MAX_DAYS)
+  #       echo $RESULT_DICT
 
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
