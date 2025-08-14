@@ -121,7 +121,7 @@ jobs:
         print(f"orphan-workflow-runs-count: {data['delete-orphan-workflow-runs-count']}")
 
     - name: Get data (shell)
-      shell: shell
+      shell: bash
       run: |
         echo "estimate=$(echo data_dict.log | jq .['core-limit-usage-estimate'])" >> $GITHUB_OUTPUT
 
