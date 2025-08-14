@@ -101,6 +101,11 @@ jobs:
         repo-url: ${{ github.repository }}
         max-days: 10
 
+    - name: Use generated output
+      run: |
+        # get result_dict
+        echo "Data returned: ${{ steps.stale-workflow-runs.outputs.result_dict }}"
+
   stale-issues-prs: # https://github.com/actions/stale
     runs-on: ubuntu-latest
 
@@ -141,27 +146,28 @@ jobs:
         pr-check: true
         repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-  update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
-    runs-on: ubuntu-latest
+  # update-pre-commit: # https://github.com/tagdots/update-pre-commit-action
+  #   runs-on: ubuntu-latest
 
-    permissions:
-      contents: write
-      pull-requests: write
+  #   permissions:
+  #     contents: write
+  #     pull-requests: write
 
-    steps:
-    - name: Run update-pre-commit
-      id: update-pre-commit
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
-      with:
-        file: .pre-commit-config.yaml
-        dry-run: false
-        open-pr: true
+  #   steps:
+  #   - name: Run update-pre-commit
+  #     id: update-pre-commit
+  #     env:
+  #       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #     uses: tagdots/update-pre-commit-action@c1b9f2cb98f920a06a99172d09af349bf783f3d9 # 1.0.20
+  #     with:
+  #       file: .pre-commit-config.yaml
+  #       dry-run: false
+  #       open-pr: true
 
   notify-slack:
     if: always()
-    needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
+    # needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
+    needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches]
 
     runs-on: ubuntu-latest
 
@@ -174,7 +180,8 @@ jobs:
       shell: bash
       run: |
         # get overall result from all of the previous jobs
-        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
+        # if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' && needs.update-pre-commit.result == 'success' }}"; then
+        if "${{ needs.badge-coverage.result == 'success' && needs.badge-marketplace.result == 'success' && needs.stale-workflow-runs.result == 'success' && needs.stale-issues-prs.result == 'success' && needs.stale-branches.result == 'success' }}"; then
           echo "WORKFLOW_RESULT=:white_check_mark:" >> "$GITHUB_OUTPUT"
         else
           echo "WORKFLOW_RESULT=:no_entry:" >> "$GITHUB_OUTPUT"
@@ -196,6 +203,6 @@ jobs:
               Job: badge-marketplace   - ${{ needs.badge-marketplace.result }}\n
               Job: stale-workflow-runs - ${{ needs.stale-workflow-runs.result }}\n
               Job: stale-issues-prs    - ${{ needs.stale-issues-prs.result }}\n
-              Job: stale-branches      - ${{ needs.stale-branches.result }}\n
-              Job: update-pre-commit   - ${{ needs.update-pre-commit.result }}
+              Job: stale-branches      - ${{ needs.stale-branches.result }}
+              # Job: update-pre-commit   - ${{ needs.update-pre-commit.result }}
               ```"

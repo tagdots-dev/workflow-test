@@ -603,4 +603,4 @@ def main(dry_run, repo_url, min_runs, max_days):
 
 if __name__ == '__main__':  # pragma: no cover
     data_dict = main(standalone_mode=False)
-    # print(data_dict)
+    print(f"::set-output name=result_dict::{data_dict}")
