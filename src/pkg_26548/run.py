@@ -526,7 +526,11 @@ def main(dry_run, repo_url, min_runs, max_days):
 
     """data to return"""
     # data_dict = {}
+    core_remaining = 0
+    core_reset = None
     core_usage_estimate = None
+    delete_orphan_workflow_runs_count = 0
+    delete_active_workflow_runs_count = 0
 
     try:
         gh = get_auth()
@@ -543,9 +547,6 @@ def main(dry_run, repo_url, min_runs, max_days):
         repo = gh.get_repo(owner_repo)
 
         if check_user_inputs(repo, repo_url, min_runs, max_days):
-            delete_orphan_workflow_runs_count = 0
-            delete_active_workflow_runs_count = 0
-
             """
             get all workflow runs
             """
