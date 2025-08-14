@@ -119,6 +119,7 @@ jobs:
       shell: bash
       run: |
         # get data from the last step to set GITHUB_OUTPUT
+        cat data_dict.log | jq .
         echo "dry_run=$(cat data_dict.log | jq '."dry-run"')" >> $GITHUB_OUTPUT
         echo "repo_url=$(cat data_dict.log | jq '."repo-url"')" >> $GITHUB_OUTPUT
         echo "max_days=$(cat data_dict.log | jq '."max-days"')" >> $GITHUB_OUTPUT
