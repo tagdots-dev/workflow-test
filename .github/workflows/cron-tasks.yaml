@@ -80,9 +80,9 @@ jobs:
       uses: tagdots/setup-badge-action@d450907c2ddc3c94b5eaed20f521eb4846475937 # 1.0.4
       with:
         badge-name: marketplace
-        badge-url: https://github.com/marketplace/actions/cleanup-workflow-action
+        badge-url: https://github.com/marketplace/actions/delete-workflow-runs-action
         label: Marketplace
-        message: cleanup-workflow-action
+        message: delete-workflow-runs-action
 
   stale-workflow-runs: # https://github.com/tagdots-dev/action-test
     runs-on: ubuntu-latest
@@ -202,7 +202,7 @@ jobs:
         dry-run: false
         open-pr: true
 
-  notify-slack:
+  notify-slack: # https://github.com/slackapi/slack-github-action
     if: always()
     needs: [badge-coverage, badge-marketplace, stale-workflow-runs, stale-issues-prs, stale-branches, update-pre-commit]
 
