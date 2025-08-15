@@ -84,7 +84,7 @@ jobs:
         label: Marketplace
         message: delete-workflow-runs-action
 
-  stale-workflow-runs: # https://github.com/tagdots-dev/action-test
+  stale-workflow-runs: # https://github.com/tagdots/delete-workflow-runs
     runs-on: ubuntu-latest
 
     permissions:
@@ -106,7 +106,7 @@ jobs:
 
     - name: Run stale-workflow-runs
       id: stale-workflow-runs
-      uses: tagdots-dev/action-test@delete-workflow-runs
+      uses: tagdots/delete-workflow-runs-action@563f02090cdf93da6798bcf304238e8ac383c49e # 1.0.2
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
