@@ -299,7 +299,6 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
                 console.print(f"([red]MOCK TO DELETE[/red]): "
                               f"[black]{result_df_after_min_runs['run_id'].to_list()}[/black]")
             else:
-                # threads = []
                 with Progress() as progress:
                     overall_task = progress.add_task("[green]Processing data...\n", total=group_count)
 
