@@ -549,7 +549,7 @@ def main(dry_run, repo_url, min_runs, max_days):
                 core_usage_estimate = get_api_estimate(delete_orphan_workflow_runs_count, delete_active_workflow_runs_count)
 
                 console.print('\n[blue]************************** API Usage Estimate ******************************[/blue]')
-                console.print(f'This delete can consume [red]{core_usage_estimate}[/red] of your API limit.')
+                console.print(f'This delete can consume [red]{core_usage_estimate}[/red] units of your API limit.')
                 if (core_remaining * 0.90) > core_usage_estimate:
                     console.print('\nEnough API limit to run this delete now? ✅ yes')
                 else:
