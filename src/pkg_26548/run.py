@@ -10,7 +10,7 @@ import os
 import sys
 import threading
 import time
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import click
@@ -44,7 +44,7 @@ def get_auth():
     sys.exit(1)
 
 
-def get_owner_repo(repo_url):
+def get_owner_repo(repo_url: str) -> str:
     """
     Get owner/repo for pyGitHub to interact with GitHub API
 
@@ -58,7 +58,7 @@ def get_owner_repo(repo_url):
     return owner_repo
 
 
-def check_user_inputs(repo, repo_url, min_runs, max_days):
+def check_user_inputs(repo: Repository.Repository, repo_url: str, min_runs: int, max_days: int) -> bool:
     """
     Check user inputs
 
@@ -95,7 +95,7 @@ def check_user_inputs(repo, repo_url, min_runs, max_days):
     return True
 
 
-def get_core_api_rate_limit(gh):
+def get_core_api_rate_limit(gh: Github) -> tuple[int, datetime]:
     """
     Get Core API Rate Limit (rate limit endpoint itself does not consume regular API quota)
 
@@ -113,10 +113,10 @@ def get_core_api_rate_limit(gh):
     print(f'API rate limit remaining: {core_remaining}')
     print(f'API rate limit reset at : {core_reset} (UTC)\n')
 
-    return core_remaining, core_reset
+    return (core_remaining, core_reset)
 
 
-def get_all_workflow_runs(repo):
+def get_all_workflow_runs(repo: Repository.Repository) -> pd.DataFrame:
     """
     Get all workflow runs
 
@@ -152,7 +152,8 @@ def get_all_workflow_runs(repo):
     return df_all_runs
 
 
-def append_runs_to_list(all_runs, workflow_id, run_id, created_at, name, lock):
+def append_runs_to_list(all_runs: list, workflow_id: int, run_id: int, created_at: datetime,
+                        name: str, lock: threading.Lock):
     """
     Append workflow runs to all_runs list
 
@@ -162,8 +163,6 @@ def append_runs_to_list(all_runs, workflow_id, run_id, created_at, name, lock):
     name       : workflow run name from workflow path
     run_id     : run id from workflow
     workflow_id: workflow id from all_runs
-
-    Return: pandas dataframe that contains all workflow runs
     """
     with lock:
         all_runs.append({
@@ -174,7 +173,8 @@ def append_runs_to_list(all_runs, workflow_id, run_id, created_at, name, lock):
         })
 
 
-def break_down_df_all_runs(repo, df_all_runs):
+def break_down_df_all_runs(repo: Repository.Repository, df_all_runs: pd.DataFrame) ->\
+                           tuple[pd.DataFrame, pd.DataFrame, list]:
     """
     break down all workflow runs
 
@@ -206,7 +206,8 @@ def break_down_df_all_runs(repo, df_all_runs):
     return df_orphan_runs, df_active_runs, list_orphan_ids
 
 
-def delete_orphan_workflow_runs(repo, owner_repo, dry_run, df_orphan_runs):
+def delete_orphan_workflow_runs(repo: Repository.Repository, owner_repo: str, dry_run: bool,
+                                df_orphan_runs: pd.DataFrame) -> int:
     """
     Delete orphan workflow runs
 
@@ -216,7 +217,7 @@ def delete_orphan_workflow_runs(repo, owner_repo, dry_run, df_orphan_runs):
     dry_run       : dry run
     df_orphan_runs: pandas dataframe that contains orphan workflow runs
 
-    Return: total number of orphan workflow runs to be deleted
+    Return: total number of orphan workflow runs
     """
     console = Console()
     list_run_id = df_orphan_runs['run_id'].to_list()
@@ -237,7 +238,8 @@ def delete_orphan_workflow_runs(repo, owner_repo, dry_run, df_orphan_runs):
     return len(list_run_id)
 
 
-def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df):
+def delete_active_workflow_runs_min_runs(repo: Repository.Repository, owner_repo: str, dry_run: bool,
+                                         min_runs: int, df: pd.DataFrame) -> int:
     """
     Delete active workflow runs using min-runs option
 
@@ -265,7 +267,7 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
     """
     group_count_series = df_groupby_name.size()
     print('\n🐑 Active Workflow Runs (grouped by Workflow Name)')
-    print(f'{group_count_series}\n')
+    print(f'{group_count_series.to_string()}\n')
 
     """
     Filter groups (count > min_runs) into <class 'pandas.core.indexes.base.Index'>
@@ -282,8 +284,10 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
 
             """
             Get the row count for each group; Calculate the number of rows to remove; Get all the rows to remove
+            note: group_count_series.get() may result in int | None >> a tmp var in transit >> ensure group_count is int
             """
-            group_count_before_min_runs = group_count_series.get(filtered_group_names_index[i])
+            group_count_before_min_runs_tmp = group_count_series.get(filtered_group_names_index[i])
+            group_count_before_min_runs = group_count_before_min_runs_tmp if group_count_before_min_runs_tmp else 0
             group_count = group_count_before_min_runs - min_runs
             result_df_after_min_runs = result_df.head(group_count)
 
@@ -315,7 +319,8 @@ def delete_active_workflow_runs_min_runs(repo, owner_repo, dry_run, min_runs, df
     return delete_active_workflow_runs_count
 
 
-def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df):
+def delete_active_workflow_runs_max_days(repo: Repository.Repository, owner_repo: str, dry_run: bool,
+                                         max_days: int, df: pd.DataFrame) -> int:
     """
     Delete active workflow runs using max-days option
 
@@ -346,7 +351,7 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
     df_groupby_name = df.groupby('name')
     group_count_series = df_groupby_name.size()
     print('\n🐑 Active Workflow Runs (grouped by Workflow Name)')
-    print(f'{group_count_series}\n')
+    print(f'{group_count_series.to_string()}\n')
 
     """
     Filter workflow runs by created_at < cutoff_date with <class 'pandas.core.frame.DataFrame'>
@@ -382,8 +387,10 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
             """
             Get the row count for each group
             Accumulate the total number of rows to return for API estimate purpose
+            note: group_count_series.get() may result in int | None >> a tmp var in transit >> ensure group_count is int
             """
-            group_count = group_count_series.get(filtered_group_names_index[i])
+            group_count_tmp = group_count_series.get(filtered_group_names_index[i])
+            group_count = group_count_tmp if group_count_tmp else 0
             delete_active_workflow_runs_count += group_count
 
             print(f'\n🗑️ Deleting {group_count} workflow runs from {filtered_group_names_index[i]}')
@@ -406,7 +413,7 @@ def delete_active_workflow_runs_max_days(repo, owner_repo, dry_run, max_days, df
     return delete_active_workflow_runs_count
 
 
-def delete_workflow_runs(count, repo, workflow_run_id):  # pragma: no cover
+def delete_workflow_runs(count: int, repo: Repository.Repository, workflow_run_id: int) -> int:
     """
     Delete workflow runs
 
@@ -422,12 +429,12 @@ def delete_workflow_runs(count, repo, workflow_run_id):  # pragma: no cover
         time.sleep(0.5)
         return workflow_run_id
 
-    except GithubException as e:
+    except GithubException as e:  # pragma: no cover
         print(f'❌ Failed to delete workflow run {workflow_run_id}: {e}')
-        return None
+        return 0
 
 
-def get_api_estimate(orphan_runs_count, delete_runs_count):
+def get_api_estimate(orphan_runs_count: int, delete_runs_count: int) -> int:
     """
     Use dry-run to get API Usage Estimate
 
@@ -437,7 +444,7 @@ def get_api_estimate(orphan_runs_count, delete_runs_count):
 
     NOTE:
     1. this script consumes 3 API limit at the minimum
-    2. every page (100 items) on paginationlist adds an API call
+    2. every page (100 items) on paginationlist consumes an API call
     3. "delete workflow run" requires 2 API calls to 1) retrieve the workflow run object 2) call the delete method
     """
     estimate = (
@@ -447,8 +454,9 @@ def get_api_estimate(orphan_runs_count, delete_runs_count):
     return estimate
 
 
-def write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_reset,
-                    core_usage_estimate, delete_active_workflow_runs_count, delete_orphan_workflow_runs_count):
+def write_data_dict(dry_run: bool, repo_url: str, min_runs: int, max_days: int, core_remaining: int,
+                    core_reset: datetime, core_usage_estimate: int, delete_active_workflow_runs_count: int,
+                    delete_orphan_workflow_runs_count: int):
     """
     Write data_dict to a file
 
@@ -487,13 +495,13 @@ def write_data_dict(dry_run, repo_url, min_runs, max_days, core_remaining, core_
 @click.version_option(version=__version__)
 def main(dry_run, repo_url, min_runs, max_days):
     console = Console()
-    console.print(f"\n🚀 Starting to Delete GitHub Action workflows (dry-run: [red]{dry_run}[/red], "
-                  f"min-runs: [red]{min_runs}[/red], max-days: [red]{max_days}[/red])\n")
+    print(f"\n🚀 Starting to Delete GitHub Action workflows (dry-run: {dry_run}, " +
+          f"min-runs: {min_runs}, max-days: {max_days})\n")
 
     """initialize data"""
     core_remaining = 0
-    core_reset = None
-    core_usage_estimate = None
+    core_reset = datetime.now() + timedelta(hours=1)
+    core_usage_estimate = 0
     delete_orphan_workflow_runs_count = 0
     delete_active_workflow_runs_count = 0
 

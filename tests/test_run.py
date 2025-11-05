@@ -74,27 +74,27 @@ class TestCheckUserInputs:
 
     def test_neither_min_nor_max(self):
         repo = Mock()
-        assert not check_user_inputs(repo, "https://github.com/owner/repo", None, None)
+        assert not check_user_inputs(repo, "https://github.com/owner/repo", None, None)  # type: ignore reportArgumentType
 
     def test_min_runs_negative(self):
         repo = Mock()
-        assert not check_user_inputs(repo, "https://github.com/owner/repo", -1, None)
+        assert not check_user_inputs(repo, "https://github.com/owner/repo", -1, None)  # type: ignore reportArgumentType
 
     def test_max_days_negative(self):
         repo = Mock()
-        assert not check_user_inputs(repo, "https://github.com/owner/repo", None, -1)
+        assert not check_user_inputs(repo, "https://github.com/owner/repo", None, -1)  # type: ignore reportArgumentType
 
     def test_invalid_repo_url(self):
         repo = Mock()
-        assert not check_user_inputs(repo, "invalid_url", 5, None)
+        assert not check_user_inputs(repo, "invalid_url", 5, None)  # type: ignore reportArgumentType
 
     def test_valid_min_runs(self):
         repo = Mock()
-        assert check_user_inputs(repo, "https://github.com/owner/repo", 5, None)
+        assert check_user_inputs(repo, "https://github.com/owner/repo", 5, None)  # type: ignore reportArgumentType
 
     def test_valid_max_days(self):
         repo = Mock()
-        assert check_user_inputs(repo, "https://github.com/owner/repo", None, 5)
+        assert check_user_inputs(repo, "https://github.com/owner/repo", None, 5)  # type: ignore reportArgumentType
 
 
 class TestGetApiEstimate:
@@ -339,7 +339,7 @@ class TestMain:
             main,
             [
                 "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-                "--min-runs", 100,
+                "--min-runs", "100",
                 "--dry-run", "true"
             ]
         )
@@ -360,7 +360,7 @@ class TestMain:
             main,
             [
                 "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-                "--max-days", 5,
+                "--max-days", "5",
                 "--dry-run", "true"
             ]
         )
