@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## 1.3.40 (2026-03-31)
+
+### Fix
+
+- update github url
+- remove unused dependencies
+- improve code quality
+- fix typo in python matrix
+
+### Refactor
+
+- reformat pyproject after pyproject_fmt update
+
 ## 1.3.32 (2025-11-05)
 
 ### Feat
