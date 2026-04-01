@@ -1,19 +1,16 @@
 [build-system]
 build-backend = "setuptools.build_meta"
-
 requires = [ "setuptools", "wheel" ]
 
 [project]
 name = "pkg-26548"
 version = "1.3.32"
-
 readme = "README.md"
 license-files = [ "LICENSE" ]
 authors = [
   { name = "developers", email = "developers@tagdots.com" },
 ]
 requires-python = ">=3.12.10"
-
 classifiers = [
   "Intended Audience :: Developers",
   "Programming Language :: Python :: 3 :: Only",
@@ -22,19 +19,16 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Build Tools",
 ]
-
 dependencies = [
   "click==8.3.1",
   "pandas==3.0.1",
   "pygithub==2.9.0",
   "rich==14.3.3",
 ]
-
 optional-dependencies.local = [
   "commitizen",
   "pre-commit",
 ]
-
 optional-dependencies.test = [
   "build",
   "coverage",
@@ -44,13 +38,11 @@ optional-dependencies.test = [
   "pytest",
   "twine",
 ]
-
 urls.Changelog = "https://github.com/tagdots/delete-workflow-runs/blob/main/CHANGELOG.md"
 urls.Documentation = "https://github.com/tagdots/delete-workflow-runs/blob/main/README.md"
 urls.Homepage = "https://github.com/tagdots"
 urls.Issues = "https://github.com/tagdots/delete-workflow-runs/issues"
 urls.Repository = "https://github.com/tagdots/delete-workflow-runs"
-
 scripts.pkg-26548 = "pkg_26548.run:main"
 
 [dependency-groups]
@@ -58,11 +50,9 @@ test = [
   "coverage[toml]",
 ]
 
-[tool.setuptools.packages.find]
-where = [ "src" ]
-
-[tool.setuptools.dynamic]
-version = { attr = "src.pkg_26548.__init__" }
+[tool.setuptools]
+dynamic.version = { attr = "src.pkg_26548.__init__" }
+packages.find.where = [ "src" ]
 
 [tool.pyproject-fmt]
 column_width = 125
@@ -70,18 +60,14 @@ indent = 2
 keep_full_version = true
 
 [tool.coverage]
+run.branch = true
+run.command_line = "-m pytest -vs tests/"
+run.include = [ "src/pkg_26548/*" ]
+run.omit = [ "tests/*" ]
+report.fail_under = 80
+report.include = [ "src/pkg_26548/*" ]
+report.show_missing = false
 source = [ "." ]
-
-[tool.coverage.run]
-branch = true
-command_line = "-m pytest -vs tests/"
-include = [ "src/pkg_26548/*" ]
-omit = [ "tests/*" ]
-
-[tool.coverage.report]
-fail_under = 80
-show_missing = false
-include = [ "src/pkg_26548/*" ]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
