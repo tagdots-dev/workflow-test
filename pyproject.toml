@@ -22,8 +22,8 @@ classifiers = [
 dependencies = [
   "click==8.3.2",
   "pandas==3.0.2",
-  "pygithub==2.9.0",
-  "rich==14.3.4",
+  "pygithub==2.9.1",
+  "rich==15.0.0",
 ]
 optional-dependencies.local = [
   "commitizen",
