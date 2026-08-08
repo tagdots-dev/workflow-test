@@ -103,17 +103,19 @@ class TestGetApiEstimate:
         active = 50
         total = orphan + active
         estimate = get_api_estimate(orphan, active)
-        assert estimate == (total * 2) + (total//100 + 1) + 3
+        assert estimate == (total * 2) + (total // 100 + 1) + 3
 
 
 class TestBreakDownDfAllRuns:
     def test_break_down_with_orphans(self):
-        df_all_runs = pd.DataFrame({
-            "workflow_id": [101, 102, 201],
-            "run_id": [1011, 1021, 2011],
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 3,
-            "name": ["wf1", "wf2", "wf3"]
-        })
+        df_all_runs = pd.DataFrame(
+            {
+                "workflow_id": [101, 102, 201],
+                "run_id": [1011, 1021, 2011],
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 3,
+                "name": ["wf1", "wf2", "wf3"],
+            }
+        )
 
         mock_workflow1 = Mock(id=101)
         mock_workflow2 = Mock(id=102)
@@ -128,6 +130,7 @@ class TestDeleteOrphanWorkflowRuns:
     """
     dry-run: delete orphan run ids
     """
+
     def test_delete_orphan_runs_dry_run(self):
         df_orphan = pd.DataFrame({"run_id": [101010, 101020]})
         mock_repo = Mock()
@@ -145,49 +148,64 @@ class TestDeleteActiveWorkflowRunsMinRuns:
     """
     dry-run: delete 4 of 5 run ids from active workflows (on min-runs)
     """
+
     def test_delete_active_runs_min_runs_dry_run_true(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01", "workflow-01"],
-            "run_id": [90001, 90002, 90003, 90004, 90005],
-            "workflow_id": [101] * 5,
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 5
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_min_runs(
-            mock_repo, dry_run=True, min_runs=1, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": [
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                ],
+                "run_id": [90001, 90002, 90003, 90004, 90005],
+                "workflow_id": [101] * 5,
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 5,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_min_runs(mock_repo, dry_run=True, min_runs=1, df=df_active)
         assert count == 4
 
     """
     dry-run: there is no active workflow to delete (on min-runs)
     """
+
     def test_delete_active_runs_min_runs_dry_run_true_no_delete(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
-            "run_id": [60001, 60002, 60003, 60004],
-            "workflow_id": [1] * 4,
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_min_runs(
-            mock_repo, dry_run=True, min_runs=20, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
+                "run_id": [60001, 60002, 60003, 60004],
+                "workflow_id": [1] * 4,
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_min_runs(mock_repo, dry_run=True, min_runs=20, df=df_active)
         assert count == 0
 
     """
     delete 2 of 5 run ids (on min-runs)
     """
+
     def test_delete_active_runs_min_runs_dry_run_false(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01", "workflow-01"],
-            "run_id": [40001, 40002, 4003, 40004, 40005],
-            "workflow_id": [1] * 5,
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 5
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_min_runs(
-            mock_repo, dry_run=False, min_runs=2, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": [
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                    "workflow-01",
+                ],
+                "run_id": [40001, 40002, 4003, 40004, 40005],
+                "workflow_id": [1] * 5,
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 5,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_min_runs(mock_repo, dry_run=False, min_runs=2, df=df_active)
         assert count == 3
 
 
@@ -195,49 +213,52 @@ class TestDeleteActiveWorkflowRunsMaxDays:
     """
     dry-run: delete 4 of 4 run ids from active workflows (on max-days)
     """
+
     def test_delete_active_runs_max_days_dry_run_true(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
-            "run_id": [30001, 30002, 30003, 30004],
-            "workflow_id": [101] * 4,
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_max_days(
-            mock_repo, dry_run=True, max_days=30, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
+                "run_id": [30001, 30002, 30003, 30004],
+                "workflow_id": [101] * 4,
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_max_days(mock_repo, dry_run=True, max_days=30, df=df_active)
         assert count == 4
 
     """
     dry-run: delete ZERO run ids (on max-days)
     """
+
     def test_delete_active_runs_max_days_dry_run_true_no_wf_delete(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
-            "run_id": [70001, 70002, 70003, 70004],
-            "workflow_id": [101] * 4,
-            "created_at": [datetime(2025, 1, 1, tzinfo=timezone.utc)] * 4
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_max_days(
-            mock_repo, dry_run=True, max_days=2000, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": ["workflow-01", "workflow-01", "workflow-01", "workflow-01"],
+                "run_id": [70001, 70002, 70003, 70004],
+                "workflow_id": [101] * 4,
+                "created_at": [datetime(2025, 1, 1, tzinfo=timezone.utc)] * 4,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_max_days(mock_repo, dry_run=True, max_days=2000, df=df_active)
         assert count == 0
 
     """
     delete 4 run ids from active workflows (on max-days)
     """
+
     def test_delete_active_runs_max_days_dry_run_false(self):
-        df_active = pd.DataFrame({
-            "name": ["workflow-1", "workflow-1", "workflow-1", "workflow-1"],
-            "run_id": [50101, 50102, 50103, 50104],
-            "workflow_id": [1] * 4,
-            "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4
-        })
-        mock_repo = Mock()
-        count = delete_active_workflow_runs_max_days(
-            mock_repo, dry_run=False, max_days=30, df=df_active
+        df_active = pd.DataFrame(
+            {
+                "name": ["workflow-1", "workflow-1", "workflow-1", "workflow-1"],
+                "run_id": [50101, 50102, 50103, 50104],
+                "workflow_id": [1] * 4,
+                "created_at": [datetime(2023, 1, 1, tzinfo=timezone.utc)] * 4,
+            }
         )
+        mock_repo = Mock()
+        count = delete_active_workflow_runs_max_days(mock_repo, dry_run=False, max_days=30, df=df_active)
         assert count == 4
 
 
@@ -251,10 +272,7 @@ class TestMainMock:
             mock_gh.get_repo.side_effect = GithubException(401, "Authentication error")
             result = runner.invoke(
                 main,
-                [
-                    "--repo-url", "https://github.com/owner/repo",
-                    "--max-days", "30"
-                ]
+                ["--repo-url", "https://github.com/owner/repo", "--max-days", "30"],
             )
             # print(f'\nMain result: {result}')
             # print(result.stdout)
@@ -270,10 +288,7 @@ class TestMainMock:
             mock_gh.get_repo.side_effect = GithubException(403, "Permission error")
             result = runner.invoke(
                 main,
-                [
-                    "--repo-url", "https://github.com/owner/repo",
-                    "--max-days", "30"
-                ]
+                ["--repo-url", "https://github.com/owner/repo", "--max-days", "30"],
             )
             assert result.exit_code == 1
 
@@ -286,10 +301,13 @@ class TestMainMock:
             result = runner.invoke(
                 main,
                 [
-                    "--repo-url", "https://github.com/invalid/repo",
-                    "--max-days", "30",
-                    "--dry-run", "true"
-                ]
+                    "--repo-url",
+                    "https://github.com/invalid/repo",
+                    "--max-days",
+                    "30",
+                    "--dry-run",
+                    "true",
+                ],
             )
             assert result.exit_code == 1
 
@@ -301,10 +319,13 @@ class TestMainMock:
             result = runner.invoke(
                 main,
                 [
-                    "--repo-url", "https://github-test.com/owner/repo",
-                    "--max-days", "30",
-                    "--dry-run", "true"
-                ]
+                    "--repo-url",
+                    "https://github-test.com/owner/repo",
+                    "--max-days",
+                    "30",
+                    "--dry-run",
+                    "true",
+                ],
             )
             assert result.exit_code == 1
 
@@ -320,10 +341,13 @@ class TestMain:
         result = runner.invoke(
             main,
             [
-                "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-                "--max-days", "NA",
-                "--dry-run", "false"
-            ]
+                "--repo-url",
+                "https://github.com/tagdots-dev/workflow-test",
+                "--max-days",
+                "NA",
+                "--dry-run",
+                "false",
+            ],
         )
         # print(f'\nMain result: {result}')
         # print(result.stdout)
@@ -340,10 +364,13 @@ class TestMain:
         result = runner.invoke(
             main,
             [
-                "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-                "--min-runs", "100",
-                "--dry-run", "true"
-            ]
+                "--repo-url",
+                "https://github.com/tagdots-dev/workflow-test",
+                "--min-runs",
+                "100",
+                "--dry-run",
+                "true",
+            ],
         )
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
@@ -358,10 +385,13 @@ class TestMain:
         result = runner.invoke(
             main,
             [
-                "--repo-url", "https://github.com/tagdots-dev/workflow-test",
-                "--max-days", "5",
-                "--dry-run", "true"
-            ]
+                "--repo-url",
+                "https://github.com/tagdots-dev/workflow-test",
+                "--max-days",
+                "5",
+                "--dry-run",
+                "true",
+            ],
         )
         assert result.exit_code == 0
         assert "dry-run: True" in result.output
@@ -376,10 +406,13 @@ class TestMain:
         result = runner.invoke(
             main,
             [
-                "--repo-url", "https://github.com/tagdots-dev/repo-not-found",
-                "--min-runs", "100",
-                "--dry-run", "true"
-            ]
+                "--repo-url",
+                "https://github.com/tagdots-dev/repo-not-found",
+                "--min-runs",
+                "100",
+                "--dry-run",
+                "true",
+            ],
         )
         assert result.exit_code > 0
         assert "dry-run: True" in result.output
