@@ -4,7 +4,7 @@ requires = [ "hatchling" ]
 
 [project]
 name = "pkg-26548"
-version = "1.4.0"
+version = "1.4.1"
 readme = "README.md"
 license-files = [ "LICENSE" ]
 authors = [
