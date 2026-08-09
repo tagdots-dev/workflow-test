@@ -60,7 +60,7 @@ jobs:
         shell: bash
         run: |
           echo "COV_RUN=${{ steps.run-coverage.outcome }}"                  >> "$GITHUB_OUTPUT"
-          echo "COV_PER=$(coverage report | grep TOTAL | awk '{print $6}')" >> "$GITHUB_OUTPUT"
+          echo "COV_PER=$(uv run coverage report | grep TOTAL | awk '{print $6}')" >> "$GITHUB_OUTPUT"
 
       - name: Upload coverage # https://github.com/marketplace/actions/upload-artifact
         if: ${{ !env.ACT }}
