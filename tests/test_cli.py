@@ -13,7 +13,7 @@ import pytest
 from click.testing import CliRunner
 from github import GithubException
 
-from pkg_26548.run import (
+from pkg_26548.cli import (
     break_down_df_all_runs,
     check_user_inputs,
     delete_active_workflow_runs_max_days,
@@ -29,7 +29,7 @@ from pkg_26548.run import (
 class TestGetAuth:
     def test_get_auth_success(self, monkeypatch):
         monkeypatch.setenv("GH_TOKEN", "valid_token")
-        with patch("pkg_26548.run.Github") as mock_github:
+        with patch("pkg_26548.cli.Github") as mock_github:
             mock_user = Mock()
             mock_user.login = "test_user"
             mock_gh = mock_github.return_value
@@ -56,7 +56,7 @@ class TestGetAuth:
 class TestGetRepo:
     def test_https_url(self, monkeypatch):
         monkeypatch.setenv("GH_TOKEN", "valid_token")
-        with patch("pkg_26548.run.Github") as mock_github:
+        with patch("pkg_26548.cli.Github") as mock_github:
             mock_user = Mock()
             mock_user.login = "test_user"
             mock_gh = mock_github.return_value
@@ -67,7 +67,7 @@ class TestGetRepo:
 
     def test_ssh_url(self, monkeypatch):
         monkeypatch.setenv("GH_TOKEN", "valid_token")
-        with patch("pkg_26548.run.Github") as mock_github:
+        with patch("pkg_26548.cli.Github") as mock_github:
             mock_user = Mock()
             mock_user.login = "test_user"
             mock_gh = mock_github.return_value
@@ -266,7 +266,7 @@ class TestMainMock:
     def test_cli_main_mock_401(self, monkeypatch):
         runner = CliRunner()
         monkeypatch.setenv("GH_TOKEN", "invalid_token")
-        with patch("pkg_26548.run.get_auth") as mock_auth:
+        with patch("pkg_26548.cli.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(401, "Authentication error")
@@ -282,7 +282,7 @@ class TestMainMock:
     def test_cli_main_mock_403(self, monkeypatch):
         runner = CliRunner()
         monkeypatch.setenv("GH_TOKEN", "invalid_token")
-        with patch("pkg_26548.run.get_auth") as mock_auth:
+        with patch("pkg_26548.cli.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(403, "Permission error")
@@ -294,7 +294,7 @@ class TestMainMock:
 
     def test_cli_main_mock_404(self):
         runner = CliRunner()
-        with patch("pkg_26548.run.get_auth") as mock_auth:
+        with patch("pkg_26548.cli.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             mock_gh.get_repo.side_effect = GithubException(404, "Not found")
@@ -313,7 +313,7 @@ class TestMainMock:
 
     def test_cli_main_mock_non_github_url(self):
         runner = CliRunner()
-        with patch("pkg_26548.run.get_auth") as mock_auth:
+        with patch("pkg_26548.cli.get_auth") as mock_auth:
             mock_gh = Mock()
             mock_auth.return_value = mock_gh
             result = runner.invoke(
