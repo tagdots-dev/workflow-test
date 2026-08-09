@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 1.4.0 (2026-08-08)
+
+### Fix
+
+- pyproject-fmt format update
+
 ## 1.3.40 (2026-03-31)
 
 ### Fix
