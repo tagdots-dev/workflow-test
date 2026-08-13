@@ -25,11 +25,11 @@ dependencies = [
   "pygithub~=2.9.1",
   "rich~=15.0.0",
 ]
-urls.Changelog = "https://github.com/tagdots/delete-workflow-runs/blob/main/CHANGELOG.md"
-urls.Documentation = "https://github.com/tagdots/delete-workflow-runs/blob/main/README.md"
-urls.Homepage = "https://github.com/tagdots"
-urls.Issues = "https://github.com/tagdots/delete-workflow-runs/issues"
-urls.Repository = "https://github.com/tagdots/delete-workflow-runs"
+urls.Changelog = "https://github.com/tagdots-dev/pkg-26548/blob/main/CHANGELOG.md"
+urls.Documentation = "https://github.com/tagdots-dev/pkg-26548/blob/main/README.md"
+urls.Homepage = "https://github.com/tagdots-dev"
+urls.Issues = "https://github.com/tagdots-dev/pkg-26548/issues"
+urls.Repository = "https://github.com/tagdots-dev/pkg-26548"
 scripts.pkg-26548 = "pkg_26548.cli:main"
 
 [dependency-groups]
