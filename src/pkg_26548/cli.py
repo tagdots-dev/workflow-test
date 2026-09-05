@@ -7,10 +7,10 @@ or a maximum age in days (max-days). It also removes runs belonging
 to orphaned (deleted) workflows.
 
 Usage:
-    python -m pkg_26548.cli --repo-url <url> [--min-runs N] [--max-days N] [--dry-run]
+    pkg-26548 --repo-url <url> [--min-runs N] [--max-days N] [--dry-run]
 
 Environment:
-    GH_TOKEN - required GitHub personal access token with workflow delete scope.
+    GH_TOKEN - required GitHub personal access token with action write scope.
 """
 
 import concurrent.futures
@@ -648,6 +648,7 @@ def main(dry_run, repo_url, min_runs, max_days):
     runs based on the specified criteria (min-runs or max-days).
 
     Supports dry-run mode to preview deletions without actually removing runs.
+
     Displays API rate limit information and usage estimates.
     """
     console = Console()
